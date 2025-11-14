@@ -22,3 +22,9 @@ contextBridge.exposeInMainWorld('ipcRenderer', {
   // You can expose other APTs you need here.
   // ...
 })
+
+contextBridge.exposeInMainWorld('arduinoAPI', {
+  sendWave: (selected: {size: number, period: number}) => {
+    ipcRenderer.invoke('send-wave', selected);
+  },
+});

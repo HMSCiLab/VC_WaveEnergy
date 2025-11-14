@@ -6,7 +6,8 @@ import {
   useStateMachineInput,
 } from "@rive-app/react-canvas";
 import bgImage from "../assets/background-ocean.jpg";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { IpcRendererEvent } from "electron";
 
 function WaveReadPage() {
   const { rive, RiveComponent } = useRive({
@@ -23,16 +24,19 @@ function WaveReadPage() {
   var meterEnergy = useStateMachineInput(rive, "State Machine 1", "energy", 1);
   const [energyVal, setEnergyVal] = useState<number>(1);
 
-  const changeEnergy = () => {
-    if (meterEnergy && typeof meterEnergy.value == "number") {
-      if (meterEnergy.value < 100) {
-        meterEnergy.value += 5;
-      } else {
-        meterEnergy.value = 1;
+  useEffect(() => {
+    const onWaveVal = (_event: IpcRendererEvent, val: number) => {
+      console.log("Value received: ", val);
+      setEnergyVal(val);
+      if (meterEnergy && typeof meterEnergy.value === "number") {
+        meterEnergy.value = val;
       }
-      setEnergyVal(meterEnergy.value);
-    }
-  };
+    };
+    window.ipcRenderer.on("wave-val", onWaveVal);
+    return () => {
+      window.ipcRenderer.off("wave-val", onWaveVal);
+    };
+  }, [meterEnergy]);
 
   return (
     // Main Container
@@ -48,18 +52,13 @@ function WaveReadPage() {
       {/* Meter animation */}
       <div className="flex flex-2 flex-col gap-0 justify-center items-center">
         <RiveComponent />
-        {energyVal > 0 && (
-          <div className="pb-36 text-9xl text-white">
-            {energyVal} watts
-            </div>
+        {energyVal >= 0 && (
+          <div className="pb-36 text-9xl text-white">{energyVal} watts</div>
         )}
       </div>
       {/* Info box */}
       <div className="bg-black/35 flex flex-1 flex-col gap-8 justify-center items-center">
         <h1 className="text-4xl text-white">Generating electricity...</h1>
-        <button onClick={changeEnergy} className="bg-amber-100 border-2 p-12">
-          Change energy
-        </button>
       </div>
     </div>
   );

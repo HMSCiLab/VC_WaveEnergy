@@ -1,8 +1,8 @@
-import { app, BrowserWindow } from "electron";
+import { app, BrowserWindow, ipcMain } from "electron";
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
-createRequire(import.meta.url);
+const require2 = createRequire(import.meta.url);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 process.env.APP_ROOT = path.join(__dirname, "..");
 const VITE_DEV_SERVER_URL = process.env["VITE_DEV_SERVER_URL"];
@@ -38,6 +38,36 @@ app.on("activate", () => {
   }
 });
 app.whenReady().then(createWindow);
+const { SerialPort } = require2("serialport");
+const { ReadlineParser } = require2("@serialport/parser-readline");
+const port = new SerialPort({
+  path: "/dev/cu.usbmodem1101",
+  baudRate: 9600
+});
+const parser = port.pipe(new ReadlineParser({ delimiter: "\n" }));
+let waveData = [];
+function sendWave(selected) {
+  const cmmd = JSON.stringify(selected);
+  port.write(cmmd + "\n", (err) => {
+    err ? console.log(`main.ts >> Error sending command to arduino: ${err}`) : console.log(`main.ts >> Sent command to arduino: ${cmmd}`);
+  });
+}
+ipcMain.handle("send-wave", async (event, selected) => {
+  sendWave(selected);
+  return "OK";
+});
+parser.on("data", (line) => {
+  const val = parseFloat(line);
+  if (!isNaN(val)) {
+    waveData.push(val);
+    win == null ? void 0 : win.webContents.send("wave-val", val);
+    if (waveData.length >= 10) {
+      console.log("Full wave: ", waveData);
+      win == null ? void 0 : win.webContents.send("complete-wave", waveData);
+      waveData = [];
+    }
+  }
+});
 export {
   MAIN_DIST,
   RENDERER_DIST,

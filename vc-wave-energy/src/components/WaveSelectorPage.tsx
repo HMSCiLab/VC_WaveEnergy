@@ -11,13 +11,32 @@ import {
 } from "@rive-app/react-canvas";
 import bgImage from "../assets/background-ocean.jpg";
 import ValueRow from "./util-components/ValueRow";
+import { useEffect, useState } from "react";
+import { IpcRendererEvent } from "electron";
+import { useAppContext } from "./util-components/AppContext";
 
 function WaveSelectorPage() {
+  // WAVE SEGMENT
+  const { setWaveData } = useAppContext();
+  useEffect(() => {
+    const onWaveComplete = (_event: IpcRendererEvent, buffer: number[]) => {
+      setWaveData(buffer);
+      console.log("Wave received: ", buffer);
+    };
+    window.ipcRenderer.on("complete-wave", onWaveComplete);
+    return () => {
+      window.ipcRenderer.off("complete-wave", onWaveComplete);
+    };
+  }, []);
+
   const onClick = (text: string) => {
-    console.log(`Sending wave of size ${selected?.height}m and period of ${selected?.period}s`);
-    window.ipcRenderer.invoke('send-wave', selected);
+    console.log(
+      `Sending wave of size ${selected?.height}m and period of ${selected?.period}s`
+    );
+    window.ipcRenderer.invoke("send-wave", selected);
   };
 
+  // RIVE SEGMENT
   const { rive, RiveComponent } = useRive({
     src: "/src/assets/slider.riv",
     stateMachines: "SlideMachine",
@@ -81,9 +100,6 @@ function WaveSelectorPage() {
           {" "}
           Use the slider below to select a wave size.
         </h1>
-        {/* <Link to="/">
-          <Button onClick={onClick} text="Cancel" />
-        </Link> */}
       </div>
 
       {/* Main content container */}
