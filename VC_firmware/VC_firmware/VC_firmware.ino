@@ -11,7 +11,7 @@ void loop() {
 
     for (size_t i=0; i < 10; i++){
       Serial.println(random(100));
-      delay(500);
+      delay(1000);
     }
   }
 }

@@ -6,7 +6,7 @@ import {
   useStateMachineInput,
 } from "@rive-app/react-canvas";
 import bgImage from "../assets/background-ocean.jpg";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { IpcRendererEvent } from "electron";
 
 function WaveReadPage() {
@@ -23,14 +23,41 @@ function WaveReadPage() {
 
   var meterEnergy = useStateMachineInput(rive, "State Machine 1", "energy", 1);
   const [energyVal, setEnergyVal] = useState<number>(1);
+  const targetValue = useRef(1);
+  const currentValue = useRef(1);
+  const rafId = useRef<number | null>(null);
+
+  const moveGauge = () => {
+    if (!meterEnergy) return;
+
+    const speed = 0.03; // smaller = smoother
+    currentValue.current =
+      currentValue.current +
+      (targetValue.current - currentValue.current) * speed;
+
+    meterEnergy.value = currentValue.current;
+    const closeEnough: number = Math.abs(
+      targetValue.current - currentValue.current
+    );
+    setEnergyVal(Math.floor(currentValue.current));
+
+    // Stop when close enough
+    if (closeEnough > 0.01) {
+      rafId.current = requestAnimationFrame(moveGauge);
+    }
+  };
+
+  function meterUpdate(val: number) {
+    targetValue.current = val;
+    // cancel previous frame
+    if (rafId.current) cancelAnimationFrame(rafId.current);
+    rafId.current = requestAnimationFrame(moveGauge);
+  }
 
   useEffect(() => {
     const onWaveVal = (_event: IpcRendererEvent, val: number) => {
       console.log("Value received: ", val);
-      setEnergyVal(val);
-      if (meterEnergy && typeof meterEnergy.value === "number") {
-        meterEnergy.value = val;
-      }
+      meterUpdate(val);
     };
     window.ipcRenderer.on("wave-val", onWaveVal);
     return () => {
