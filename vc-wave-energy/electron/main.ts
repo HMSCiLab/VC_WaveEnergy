@@ -73,7 +73,7 @@ app.whenReady().then(createWindow)
 const { SerialPort } = require('serialport');
 const { ReadlineParser } = require('@serialport/parser-readline');
 const port = new SerialPort({
-  path: '/dev/cu.usbmodem1101',
+  path: '/dev/cu.usbmodem101',
   baudRate: 9600,
 })
 const parser = port.pipe(new ReadlineParser({delimiter: '\n'}));
@@ -97,17 +97,16 @@ ipcMain.handle('send-wave', async(event, selected) => {
 
 // Receive serial info from arduino
 parser.on('data', (line: string) => {
-  const val = parseFloat(line);
-
+  const val: number = parseFloat(line);
   if (!isNaN(val)){
-    waveData.push(val);
-    win?.webContents.send("wave-val", val);
-    if (waveData.length >= 10) {
-      console.log("Full wave: ", waveData)
+      waveData.push(val);
+      win?.webContents.send("wave-val", val);
+    }
+  else {
+      // If val is not a number (ie \n), terminate transmission.
+      console.log("main.ts >> Full wave: ", waveData)
       win?.webContents.send("complete-wave", waveData);
       waveData = [];
     }
   }
-});
-  
- 
+);

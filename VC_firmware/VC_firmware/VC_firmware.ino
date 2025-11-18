@@ -13,5 +13,7 @@ void loop() {
       Serial.println(random(100));
       delay(1000);
     }
+
+    Serial.println('\n');
   }
 }

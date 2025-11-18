@@ -41,7 +41,7 @@ app.whenReady().then(createWindow);
 const { SerialPort } = require2("serialport");
 const { ReadlineParser } = require2("@serialport/parser-readline");
 const port = new SerialPort({
-  path: "/dev/cu.usbmodem1101",
+  path: "/dev/cu.usbmodem101",
   baudRate: 9600
 });
 const parser = port.pipe(new ReadlineParser({ delimiter: "\n" }));
@@ -56,18 +56,20 @@ ipcMain.handle("send-wave", async (event, selected) => {
   sendWave(selected);
   return "OK";
 });
-parser.on("data", (line) => {
-  const val = parseFloat(line);
-  if (!isNaN(val)) {
-    waveData.push(val);
-    win == null ? void 0 : win.webContents.send("wave-val", val);
-    if (waveData.length >= 10) {
-      console.log("Full wave: ", waveData);
+parser.on(
+  "data",
+  (line) => {
+    const val = parseFloat(line);
+    if (!isNaN(val)) {
+      waveData.push(val);
+      win == null ? void 0 : win.webContents.send("wave-val", val);
+    } else {
+      console.log("main.ts >> Full wave: ", waveData);
       win == null ? void 0 : win.webContents.send("complete-wave", waveData);
       waveData = [];
     }
   }
-});
+);
 export {
   MAIN_DIST,
   RENDERER_DIST,

@@ -11,29 +11,19 @@ import {
 } from "@rive-app/react-canvas";
 import bgImage from "../assets/background-ocean.jpg";
 import ValueRow from "./util-components/ValueRow";
-import { useEffect, useState } from "react";
-import { IpcRendererEvent } from "electron";
 import { useAppContext } from "./util-components/AppContext";
 
 function WaveSelectorPage() {
-  // WAVE SEGMENT
-  const { setWaveData } = useAppContext();
-  useEffect(() => {
-    const onWaveComplete = (_event: IpcRendererEvent, buffer: number[]) => {
-      setWaveData(buffer);
-      console.log("Wave received: ", buffer);
-    };
-    window.ipcRenderer.on("complete-wave", onWaveComplete);
-    return () => {
-      window.ipcRenderer.off("complete-wave", onWaveComplete);
-    };
-  }, []);
-
+  const { setSelectedHeight, setSelectedPeriod } = useAppContext();
   const onClick = (text: string) => {
     console.log(
       `Sending wave of size ${selected?.height}m and period of ${selected?.period}s`
     );
-    window.ipcRenderer.invoke("send-wave", selected);
+    if (selected) {
+      setSelectedHeight(selected?.height);
+      setSelectedPeriod(selected?.period);
+      window.ipcRenderer.invoke("send-wave", selected);
+    }
   };
 
   // RIVE SEGMENT
@@ -74,12 +64,12 @@ function WaveSelectorPage() {
     : 0;
 
   const options = [
-    { height: 1.0, period: 4.0 },
-    { height: 2.0, period: 5.0 },
     { height: 3.0, period: 6.0 },
-    { height: 4.0, period: 7.0 },
     { height: 5.0, period: 8.0 },
-    { height: 6.0, period: 9.0 },
+    { height: 9.0, period: 8.0 },
+    { height: 11.0, period: 9.0 },
+    { height: 14.0, period: 10.0 },
+    { height: 22.0, period: 13.0 },
   ];
   const selected = activeIndex > 0 ? options[activeIndex - 1] : undefined;
 
@@ -116,7 +106,7 @@ function WaveSelectorPage() {
             <ValueRow
               label="Wave Height"
               value={selected ? String(selected.height) : "--"}
-              unit="m"
+              unit="ft"
             />
             <ValueRow
               label="Wave Period"
