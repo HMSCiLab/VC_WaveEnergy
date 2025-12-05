@@ -1,8 +1,17 @@
 import Button from "./util-components/Button";
 import { Link } from "react-router-dom";
 import bgVideo from "../assets/wave.mp4";
+import { useEffect, useState } from "react";
 
 function StartPage() {
+  const [arduinoConnected, setArduinoConnected] = useState<boolean>(false);
+  useEffect(() => {
+    window.ipcRenderer.invoke('arduino-status').then((status) => {
+      setArduinoConnected(status.connected);
+      console.log("Arduino not connected!");
+    })
+    }, []);
+
   const onClick = (whichButton: String) => {
     console.log(whichButton);
   };
@@ -25,19 +34,26 @@ function StartPage() {
       </video>
       {/* Button container */}
       <div className="flex w-full max-w-6xl flex-col sm:flex-row items-center justify-center gap-6 sm:gap-8 md:gap-12 lg:gap-36 pb-70 sm:pb-12 md:pb-16 lg:pb-70 px-4 z-10">
-        <Link to="/wave-selector-page">
-          <Button
-            text={"Make your own\nwave"}
-            onClick={onClick}
-            styles={buttonStyles}
-          />
-        </Link>
+        {arduinoConnected && (
+          <>
+            <Link to="/wave-selector-page">
+              <Button
+                text={"Make your own\nwave"}
+                onClick={onClick}
+                styles={buttonStyles}
+              />
+            </Link>
 
-        <Button
-          text={"See real-time\nwaves"}
-          onClick={onClick}
-          styles={buttonStyles}
-        />
+            <Button
+              text={"See real-time\nwaves"}
+              onClick={onClick}
+              styles={buttonStyles}
+            />
+          </>
+        )}
+        {!arduinoConnected &&
+        <h1 className="text-4xl text-black">Arduino not connected!</h1>
+        }
       </div>
     </div>
   );

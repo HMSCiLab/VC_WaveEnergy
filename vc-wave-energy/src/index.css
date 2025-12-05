@@ -3,3 +3,13 @@
 @theme {
     --color-coastal-blue-light: #89c2d9;
 }
+
+@keyframes drawCircle {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.animate-draw {
+  animation: drawCircle 3s linear forwards;
+}

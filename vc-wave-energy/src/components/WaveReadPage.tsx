@@ -9,10 +9,12 @@ import bgImage from "../assets/background-ocean.jpg";
 import { useEffect, useState, useRef } from "react";
 import { IpcRendererEvent } from "electron";
 import { useAppContext } from "./util-components/AppContext";
-import { min, max, mean } from "simple-statistics";
+import { mean } from "simple-statistics";
+import LoadingCircle from "./util-components/loadingCircle";
+import { Link } from "react-router-dom";
 
 function WaveReadPage() {
-  const { rive, RiveComponent } = useRive({
+  const { rive: riveMeter, RiveComponent: RiveMeterComponent } = useRive({
     src: "/src/assets/power_meter.riv",
     stateMachines: "State Machine 1",
     autoplay: true,
@@ -24,7 +26,12 @@ function WaveReadPage() {
   });
 
   // WAVE GENERATION
-  var meterEnergy = useStateMachineInput(rive, "State Machine 1", "energy", 1);
+  var meterEnergy = useStateMachineInput(
+    riveMeter,
+    "State Machine 1",
+    "energy",
+    1
+  );
   const [energyVal, setEnergyVal] = useState<number>(1);
   const targetValue = useRef(1);
   const currentValue = useRef(1);
@@ -65,24 +72,24 @@ function WaveReadPage() {
 
   function genInfo() {
     const meanEnergy = mean(waveData);
-    const energy: number = (meanEnergy * selectedHeight);
+    const energy: number = meanEnergy * selectedHeight;
     setEnergyMean(meanEnergy);
     setEstEnergy(Math.round(energy));
     setDoodad(chooseDoodad(energy));
   }
 
-  function chooseDoodad (val: number) {
+  function chooseDoodad(val: number) {
     const householdObjects = {
       TV60inch: 'a 60" TV', // 150
       ledLight: "an LED Lightbulb", // 10
       dishWasher: "a dishwasher", // 1200
       toaster: "a toaster", // 800
       vacuum: "a vacuum cleaner", // 500
-    }
+    };
     console.log(val);
-    if (val <= 10){
+    if (val <= 10) {
       return householdObjects.ledLight;
-    } else if ( val > 10 && val < 400 ) {
+    } else if (val > 10 && val < 400) {
       return householdObjects.TV60inch;
     } else if (val > 400 && val < 900) {
       return householdObjects.toaster;
@@ -128,9 +135,17 @@ function WaveReadPage() {
         backgroundRepeat: "no-repeat",
       }}
     >
+      {showInfo && (
+        <div className="absolute top-4 right-4 inset-0 z-50">
+          <Link to="/">
+            <LoadingCircle />
+          </Link>
+        </div>
+      )}
       {/* Meter animation */}
-      <div className="flex flex-2 flex-col gap-0 justify-center items-center">
-        <RiveComponent />
+      <div className="flex flex-2 flex-col gap-0 justify-center items-center relative">
+        {/* <LoadingCircle /> */}
+        <RiveMeterComponent />
         {energyVal >= 0 && (
           <div className="pb-36 text-9xl text-white">{energyVal} watts</div>
         )}

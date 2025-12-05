@@ -2,6 +2,7 @@ import { app, BrowserWindow, ipcMain } from 'electron'
 import { createRequire } from 'node:module'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
+import { connected } from 'node:process'
 // import { SerialPort } from 'serialport'
 
 const require = createRequire(import.meta.url)
@@ -76,6 +77,16 @@ const port = new SerialPort({
   path: '/dev/cu.usbmodem101',
   baudRate: 9600,
 })
+
+port.on('error', (err: Error) => {
+  console.log("main.ts >> Arduino not connected.");
+  win?.webContents.send("e-error", err);
+})
+
+ipcMain.handle("arduino-status", () => {
+  return { connected: port.isOpen }
+})
+
 const parser = port.pipe(new ReadlineParser({delimiter: '\n'}));
 let waveData: number[] = [];
 

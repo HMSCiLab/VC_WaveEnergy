@@ -44,6 +44,13 @@ const port = new SerialPort({
   path: "/dev/cu.usbmodem101",
   baudRate: 9600
 });
+port.on("error", (err) => {
+  console.log("main.ts >> Arduino not connected.");
+  win == null ? void 0 : win.webContents.send("e-error", err);
+});
+ipcMain.handle("arduino-status", () => {
+  return { connected: port.isOpen };
+});
 const parser = port.pipe(new ReadlineParser({ delimiter: "\n" }));
 let waveData = [];
 function sendWave(selected) {
