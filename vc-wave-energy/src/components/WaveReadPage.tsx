@@ -85,15 +85,18 @@ function WaveReadPage() {
       `${readTime.toString()}s`
     );
     await countdown().then(() => console.log("countdown complete"));
-    if (window.location.href === "http://localhost:5173/wave-read-page") {
-      window.location.href = "/";
-    }
   }
 
   async function countdown(): Promise<void> {
     for (let i = readTime; i > 1; i--) {
+      if (window.location.href !== "http://localhost:5173/wave-read-page") {
+        break;
+      }
       console.log(i);
       await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
+    if (window.location.href === "http://localhost:5173/wave-read-page") {
+      window.location.href = "/";
     }
   }
 
@@ -158,14 +161,12 @@ function WaveReadPage() {
       {showInfo && (
         <div className="absolute top-4 right-4 inset-0 z-50">
           <Link to="/">
-            {/* <LoadingCircle duration={readTime.toString()} /> */}
             <LoadingCircle />
           </Link>
         </div>
       )}
       {/* Meter animation */}
       <div className="flex flex-2 flex-col gap-0 justify-center items-center relative">
-        {/* <LoadingCircle /> */}
         <RiveMeterComponent />
         {energyVal >= 0 && (
           <div className="pb-36 text-9xl text-white">{energyVal} watts</div>
