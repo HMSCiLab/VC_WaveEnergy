@@ -36,7 +36,8 @@ function WaveReadPage() {
   const targetValue = useRef(1);
   const currentValue = useRef(1);
   const rafId = useRef<number | null>(null);
-  const { waveData, setWaveData, selectedHeight, selectedPeriod } =
+  const meterMounted = useRef(true);
+  const { waveData, setWaveData, selectedHeight } =
     useAppContext();
   const [showInfo, setShowInfo] = useState<boolean>(false);
   const [energyMean, setEnergyMean] = useState<number>(0);
@@ -46,6 +47,7 @@ function WaveReadPage() {
 
   const moveGauge = () => {
     if (!meterEnergy) return;
+    if (!meterMounted.current) return;
 
     const speed = 0.03; // smaller = smoother
     currentValue.current =
@@ -93,7 +95,7 @@ function WaveReadPage() {
         break;
       }
       console.log(i);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 950));
     }
     if (window.location.href === "http://localhost:5173/wave-read-page") {
       window.location.href = "/";
@@ -120,7 +122,10 @@ function WaveReadPage() {
     }
   }
 
+  // METER ANIMATION
   useEffect(() => {
+    if (!meterEnergy) return;
+
     const onWaveVal = (_event: IpcRendererEvent, val: number) => {
       console.log(val);
       meterUpdate(val);
@@ -140,6 +145,16 @@ function WaveReadPage() {
     };
   }, [meterEnergy]);
 
+  // SPECIAL CASE TO MANAGE METER
+  useEffect(() => {
+    meterMounted.current = true;
+    return () => {
+      meterMounted.current = false;
+      if (rafId.current) cancelAnimationFrame(rafId.current);
+    }
+  }, [])
+
+  // INFO, COUNTDOWN, LOADING ANIMATION
   useEffect(() => {
     if (showInfo && waveData.length > 0) {
       genInfo();
