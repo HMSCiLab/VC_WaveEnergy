@@ -5,12 +5,24 @@ import { useEffect, useState } from "react";
 
 function StartPage() {
   const [arduinoConnected, setArduinoConnected] = useState<boolean>(false);
+
   useEffect(() => {
-    window.ipcRenderer.invoke('arduino-status').then((status) => {
+    async function getInitStatus() {
+      const status = await window.ipcRenderer.invoke("arduino-status");
       setArduinoConnected(status.connected);
-      console.log("Arduino not connected!");
+    }
+    getInitStatus();
+
+    window.ipcRenderer.on("arduino-connected", () => {
+      console.log("Arduino connected!");
+      setArduinoConnected(true);
     })
-    }, []);
+    
+    window.ipcRenderer.on("arduino-disconnected", () => {
+      console.log("Arduino disconnected!");
+      setArduinoConnected(false);
+    })
+  }, []);
 
   const onClick = (whichButton: String) => {
     console.log(whichButton);
@@ -51,9 +63,9 @@ function StartPage() {
             />
           </>
         )}
-        {!arduinoConnected &&
-        <h1 className="text-4xl text-black">Arduino not connected!</h1>
-        }
+        {!arduinoConnected && (
+          <h1 className="text-4xl text-black">Arduino not connected!</h1>
+        )}
       </div>
     </div>
   );

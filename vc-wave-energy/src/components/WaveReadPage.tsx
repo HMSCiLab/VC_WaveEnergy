@@ -94,7 +94,6 @@ function WaveReadPage() {
       if (window.location.href !== "http://localhost:5173/wave-read-page") {
         break;
       }
-      console.log(i);
       await new Promise((resolve) => setTimeout(resolve, 950));
     }
     if (window.location.href === "http://localhost:5173/wave-read-page") {

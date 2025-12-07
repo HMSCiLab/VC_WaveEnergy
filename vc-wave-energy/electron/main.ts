@@ -2,11 +2,11 @@ import { app, BrowserWindow, ipcMain } from 'electron'
 import { createRequire } from 'node:module'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
-import { connected } from 'node:process'
-// import { SerialPort } from 'serialport'
 
 const require = createRequire(import.meta.url)
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const { SerialPort } = require('serialport');
+const { ReadlineParser } = require('@serialport/parser-readline');
 
 // The built directory structure
 //
@@ -67,57 +67,111 @@ app.on('activate', () => {
     createWindow()
   }
 })
-
 app.whenReady().then(createWindow)
 
-// Create a port
-const { SerialPort } = require('serialport');
-const { ReadlineParser } = require('@serialport/parser-readline');
-const port = new SerialPort({
-  path: '/dev/cu.usbmodem101',
-  baudRate: 9600,
-})
+// Custom send handler
+function safeSend(channel: string, ...args: any[]) {
+  if (win && !win.isDestroyed()) {
+    win.webContents.send(channel, ...args);
+  }
+}
 
-port.on('error', (err: Error) => {
-  console.log("main.ts >> Arduino not connected.");
-  win?.webContents.send("e-error", err);
-})
-
-ipcMain.handle("arduino-status", () => {
-  return { connected: port.isOpen }
-})
-
-const parser = port.pipe(new ReadlineParser({delimiter: '\n'}));
+// PORT CREATION
+let port: any = null;
 let waveData: number[] = [];
+let parser: any = null;
 
-// Send serial info to arduino
-function sendWave(selected: {size: number, period: number}){
+async function tryArduinoConnection(){
+  const ports = await SerialPort.list();
+  const arduinoPort = ports.find((p: any) => 
+    p.vendorId && (
+      p.vendorId === "239a" ||
+      p.productId === "800b"
+    )
+  );
+
+  if (!arduinoPort) {
+    if (port && port.isOpen) {
+      port.close();
+      port = null;
+      safeSend("main.ts (97) >> Arduino not connected.")
+    }
+    return;
+  }
+
+  // Do nothing if connected
+  if (port && port.isOpen) return;
+
+  port = new SerialPort({
+    path: arduinoPort.path,
+    baudRate: 9600
+  })
+
+  port.on("open", () => {
+    console.log("main.ts >> Arduino connected", arduinoPort.path);
+    safeSend("arduino-connected");
+  })
+  
+  port.on("close", () => {
+    console.log("main.ts >> Arduino disconnected");
+    port = null;
+    safeSend("arduino-disconnected");
+  })
+
+  port.on('error', (err: Error) => {
+    console.log("main.ts >> Arduino not connected.");
+    safeSend("arduino-error", err.message);
+  })
+
+  parser = port.pipe(new ReadlineParser({delimiter: '\n'}));
+
+  // Receive serial info from arduino
+  parser.on('data', (line: string) => {
+    const val: number = parseFloat(line);
+    if (!isNaN(val)){
+        waveData.push(val);
+        safeSend("wave-val", val);
+      }
+    else {
+        // If val is not a number (ie \n), terminate transmission.
+        console.log("main.ts >> Full wave: ", waveData)
+        safeSend("complete-wave", waveData);
+        waveData = [];
+      }
+    }
+  );
+}
+setInterval(tryArduinoConnection, 1000);
+
+function cleanup(){
+  console.log("main.ts >> Shutting down app");
+  if (port && port.isOpen) {
+    try {
+      port.close();
+      console.log("main.ts >> Port closed");
+    } catch (err) {
+      console.log("main.ts >> Error: ", err);
+    }
+  }
+  process.exit(0)
+}
+process.on("SIGINT", cleanup);
+process.on("SIGTERM", cleanup);
+app.on("before-quit", cleanup);
+
+// HANDLERS
+ipcMain.handle("arduino-status", () => {
+  return { connected: !!(port && port.isOpen) }
+})
+
+// Expose handle to IPC bridge
+ipcMain.handle('send-wave', async(selected) => {
   const cmmd: string = JSON.stringify(selected);
   port.write(cmmd + '\n', (err: Error | null | undefined) => {
     err 
     ? console.log(`main.ts >> Error sending command to arduino: ${err}`) 
     : console.log(`main.ts >> Sent command to arduino: ${cmmd}`);
   });
-}
-
-// Expose handle to IPC bridge
-ipcMain.handle('send-wave', async(event, selected) => {
-  sendWave(selected);
   return 'OK';
 });
 
-// Receive serial info from arduino
-parser.on('data', (line: string) => {
-  const val: number = parseFloat(line);
-  if (!isNaN(val)){
-      waveData.push(val);
-      win?.webContents.send("wave-val", val);
-    }
-  else {
-      // If val is not a number (ie \n), terminate transmission.
-      console.log("main.ts >> Full wave: ", waveData)
-      win?.webContents.send("complete-wave", waveData);
-      waveData = [];
-    }
-  }
-);
