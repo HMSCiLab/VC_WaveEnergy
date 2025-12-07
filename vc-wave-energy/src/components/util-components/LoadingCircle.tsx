@@ -1,10 +1,16 @@
+// interface Props {
+//   duration: string;
+// }
+
+// function LoadingCircle({ duration }: Props) {
 function LoadingCircle() {
   return (
     <div className="min-w-screen flex justify-end relative z-10 pt-8 pr-10">
       <div className="relative w-20 h-20">
-        <svg  className="-rotate-90 w-20 h-20">
+        <svg className="-rotate-90 w-20 h-20">
           <circle
-            className="animate-draw text-blue-500"
+            // className={`animate-draw [var(--circle-dur: ${duration}s text-blue-500`}
+            className={`animate-draw text-blue-500`}
             stroke="currentColor"
             strokeWidth="6"
             fill="transparent"

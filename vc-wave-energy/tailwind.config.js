@@ -2,7 +2,7 @@ module.exports = {
   theme: {
     extend: {
       animation: {
-        'draw': 'drawCircle 60s linear forwards',
+        'draw': 'drawCircle var(--circle-dur) linear forwards',
       },
       keyframes: {
         drawCircle: {

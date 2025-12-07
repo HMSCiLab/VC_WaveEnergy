@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+:root {
+    --circle-dur: 45s;  /* Default time to read wave information page */
+}
+
 @theme {
     --color-coastal-blue-light: #89c2d9;
 }
@@ -11,5 +15,5 @@
 }
 
 .animate-draw {
-  animation: drawCircle 3s linear forwards;
+  animation: drawCircle var(--circle-dur) linear forwards;
 }
