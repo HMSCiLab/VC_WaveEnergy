@@ -37,8 +37,7 @@ function WaveReadPage() {
   const currentValue = useRef(1);
   const rafId = useRef<number | null>(null);
   const meterMounted = useRef(true);
-  const { waveData, setWaveData, selectedHeight } =
-    useAppContext();
+  const { waveData, setWaveData, selectedHeight } = useAppContext();
   const [showInfo, setShowInfo] = useState<boolean>(false);
   const [energyMean, setEnergyMean] = useState<number>(0);
   const [estEnergy, setEstEnergy] = useState<number>(0);
@@ -150,8 +149,8 @@ function WaveReadPage() {
     return () => {
       meterMounted.current = false;
       if (rafId.current) cancelAnimationFrame(rafId.current);
-    }
-  }, [])
+    };
+  }, []);
 
   // INFO, COUNTDOWN, LOADING ANIMATION
   useEffect(() => {

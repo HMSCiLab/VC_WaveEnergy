@@ -1,19 +1,67 @@
-#include <stdlib.h>
+// #include <stdlib.h>
 
-void setup() {
-  Serial.begin(9600);
+// void setup() {
+//   Serial.begin(9600);
+// }
+
+// void loop() {
+//   if (Serial.available()){
+//     String cmmd = Serial.readStringUntil('\n');
+//     cmmd.trim();
+
+//     for (size_t i=0; i < 10; i++){
+//       Serial.println(random(100));
+//       delay(1000);
+//     }
+
+//     Serial.println('\n');
+//   }
+// }
+
+const byte enable_pin =  //high is drive on
+const byte direction_pin =  //LOW is CW, HIGH is CCW
+const byte PWM_pin = (5 or 6 have higher frequency);  //outputs the PWM signal which controls the speed of the paddle
+const byte limit_switch_A_pin =  ;// need at least one limit switch at each machanical end
+const byte limit_switch_B_pin =  ;// B C D control how far the motor travels
+const byte limit_switch_C_pin =  ;
+const byte limit_switch_D_pin =  ;// D could double as the other end limit switch
+
+void setup() 
+{
+ pinMode(enable_pin, OUTPUT);
+ digitalWrite(enable_pin, LOW);// start with motor off
+ pinMode(direction_pin, OUTPUT);
+ pinMode(PWM_pin, OUTPUT);
+ analogWrite(PWM_pin, 0); //start with zero speed
+ pinMode(limit_switch_A_pin, INPUT);
+ pinMode(limit_switch_B_pin, INPUT);
+ pinMode(limit_switch_C_pin, INPUT);
+ pinMode(limit_switch_D_pin, INPUT);
 }
 
-void loop() {
-  if (Serial.available()){
-    String cmmd = Serial.readStringUntil('\n');
-    cmmd.trim();
-
-    for (size_t i=0; i < 10; i++){
-      Serial.println(random(100));
-      delay(1000);
-    }
-
-    Serial.println('\n');
+void loop() 
+{
+  analogWrite(PWM_pin, 100); //set the speed, valid numbers 0-255 the higher the faster
+  for (byte i = 0; i < 5; i++)//controls the number of waves
+  {
+    digitalWrite(direction_pin, HIGH); //go forward
+    digitalWrite(enable_pin, HIGH); //turn on motor
+    /*Currently the system does not have an encoder. An encoder would be nice.
+    For now we will run the motor until it hits the limit switch*/
+    while (digitalRead(limit_switch_B_pin) == 0);// or C or D
+    digitalWrite(enable_pin, LOW); //turn off motor
+    delay(some small amount); //wait for the motor to stop
+    digitalWrite(direction_pin, LOW);// reverse the direction 
+    digitalWrite(enable_pin, HIGH); //turn on motor
+    while (digitalRead(limit_switch_A_pin) == 0); //go until you hit the begining switch
+    digitalWrite(enable_pin, LOW); //turn off motor
+    delay(some small amount); //wait for the motor to stop
+    delay(a larger amount);// this will adjust the time through the loop
   }
+
 }
+/*from what I understand, there is to be 9 different waves. I'm not a wave scientist so what 
+speed and distance would be required to produce these 9 waves I don't know.I invision a loop function
+where you pass the speed and distance to the function
+If we install an encoder we could run the motor for a certain number of counts in each direction
+we would have to ensure that when the paddle is parked the encoder reads zero or some preset number, if not, reset the encoder number*/
