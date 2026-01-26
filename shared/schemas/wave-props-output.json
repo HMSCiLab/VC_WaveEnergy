@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "WaveProperties",
+  "description": "Defines the three properties expected from this service.",
+  "type": "object",
+  "required": ["waveTime", "waveHeight", "wavePeriod"],
+  "properties": {
+    
+  }
+}
+

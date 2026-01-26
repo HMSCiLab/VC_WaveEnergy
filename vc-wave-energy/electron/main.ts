@@ -34,6 +34,8 @@ function createWindow() {
     webPreferences: {
       preload: path.join(__dirname, 'preload.mjs'),
     },
+    width: 1024,
+    height: 1366,
   })
 
   // Test active push message to Renderer-process.
@@ -128,16 +130,40 @@ async function tryArduinoConnection(){
   // Receive serial info from arduino
   parser.on('data', (line: string) => {
     const val: number = parseFloat(line);
-    if (!isNaN(val)){
-        waveData.push(val);
-        safeSend("wave-val", val);
+    if (isNaN(val)) {
+      console.log(line);
+      if (line === "Wave complete") {
+          console.log("main.ts >> Full wave: ", waveData)
+          safeSend("complete-wave", waveData);
+          waveData = [];
+      } 
+      else {
+       console.log("main.ts >> Message from arduino: ", line); 
       }
+    }
     else {
-        // If val is not a number (ie \n), terminate transmission.
-        console.log("main.ts >> Full wave: ", waveData)
-        safeSend("complete-wave", waveData);
-        waveData = [];
-      }
+      waveData.push(val);
+      safeSend("wave-val", val);
+    }
+
+    // if (!isNaN(val)){
+    //     waveData.push(val);
+    //     safeSend("wave-val", val);
+    //   }
+    // else {
+    //     // Just a message from arduino
+    //     console.log("main.ts >> Message from arduino: ", line);
+    // }
+
+    // console.log(line);
+    // if (line === "^D\n") {
+    //     // Special case to send wave data. TODO: simplify.
+    //     if (waveData.length > 0) {
+    //       console.log("main.ts >> Full wave: ", waveData)
+    //       safeSend("complete-wave", waveData);
+    //       waveData = [];
+    //     }
+    //   }
     }
   );
 }

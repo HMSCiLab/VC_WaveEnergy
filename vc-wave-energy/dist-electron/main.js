@@ -17,7 +17,9 @@ function createWindow() {
     icon: path.join(process.env.VITE_PUBLIC, "electron-vite.svg"),
     webPreferences: {
       preload: path.join(__dirname, "preload.mjs")
-    }
+    },
+    width: 1024,
+    height: 1366
   });
   win.webContents.on("did-finish-load", () => {
     win == null ? void 0 : win.webContents.send("main-process-message", (/* @__PURE__ */ new Date()).toLocaleString());
@@ -84,13 +86,18 @@ async function tryArduinoConnection() {
     "data",
     (line) => {
       const val = parseFloat(line);
-      if (!isNaN(val)) {
+      if (isNaN(val)) {
+        console.log(line);
+        if (line === "Wave complete") {
+          console.log("main.ts >> Full wave: ", waveData);
+          safeSend("complete-wave", waveData);
+          waveData = [];
+        } else {
+          console.log("main.ts >> Message from arduino: ", line);
+        }
+      } else {
         waveData.push(val);
         safeSend("wave-val", val);
-      } else {
-        console.log("main.ts >> Full wave: ", waveData);
-        safeSend("complete-wave", waveData);
-        waveData = [];
       }
     }
   );
