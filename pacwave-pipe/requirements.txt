@@ -4,4 +4,6 @@ numpy==2.4.1
 Jinja2==3.1.6
 netCDF4==1.7.4
 pydantic==2.12.5
-zerorpc==0.6.3
+
+# Zerorpc from pypi has a bug on line 270 of cli.py
+zerorpc @ git+https://github.com/shindelr/zerorpc-python-bugfix@master
