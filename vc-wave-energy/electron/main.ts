@@ -1,6 +1,6 @@
 import { app, BrowserWindow } from 'electron'
 import { fileURLToPath } from 'node:url'
-import { cleanup, initArduino, registerArduinoHandlers } from './arduino'
+import { cleanup, initArduino, registerArduinoHandlers } from './arduinoInterface'
 import path from 'node:path'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
