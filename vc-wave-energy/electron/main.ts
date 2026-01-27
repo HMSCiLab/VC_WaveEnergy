@@ -1,7 +1,8 @@
 import { app, BrowserWindow } from 'electron'
 import { fileURLToPath } from 'node:url'
-import { cleanup, initArduino, registerArduinoHandlers } from './arduinoInterface'
 import path from 'node:path'
+import { cleanup, initArduino, registerArduinoHandlers } from './arduinoInterface'
+import { getPipeStatus } from './pythonInterface'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 // The built directory structure
@@ -72,6 +73,7 @@ app.whenReady().then(() => {
   createWindow();
   initArduino(safeSend);
   registerArduinoHandlers();
+  getPipeStatus();
 })
 
 

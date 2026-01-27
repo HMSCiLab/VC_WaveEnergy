@@ -2,7 +2,7 @@ import { ipcMain } from "electron";
 import { IpcSender } from "./types/ipc";
 import { createRequire } from 'node:module'
 
-const require = createRequire(import.meta.url)
+const require = createRequire(import.meta.url);
 const { SerialPort } = require('serialport');
 const { ReadlineParser } = require('@serialport/parser-readline');
 

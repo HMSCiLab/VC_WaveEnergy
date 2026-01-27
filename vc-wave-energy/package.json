@@ -17,7 +17,8 @@
     "react-router-dom": "^6.30.1",
     "serialport": "^12.0.0",
     "simple-statistics": "^7.8.8",
-    "tailwindcss": "^4.1.15"
+    "tailwindcss": "^4.1.15",
+    "undici": "^6.23.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.64",

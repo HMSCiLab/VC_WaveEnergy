@@ -1,19 +1,11 @@
-from interface.api import PacWavePipeAPI
-from zerorpc import Server
-import gevent, signal
- 
+from os import path, remove
+from uvicorn import run
+from interface.api import app
 
-def main():
-    port = 1234
-    addr = f'tcp://127.0.0.1:{port}'
-    s = Server(PacWavePipeAPI())
-    s.bind(addr)
+if __name__ == '__main__':
+    uds_sock_path = '/tmp/uvicorn_pacwave_pipe.sock'
 
-    gevent.signal_handler(signal.SIGTERM, s.stop)
-    gevent.signal_handler(signal.SIGINT, s.stop)  # ^C
-    print("Starting Process\n", "-"*20)
-    s.run()
-
-
-if __name__ == "__main__":
-    main()
+    if path.exists(uds_sock_path):
+        remove(uds_sock_path)
+    
+    run(app=app, uds=uds_sock_path)
