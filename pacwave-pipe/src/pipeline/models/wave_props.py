@@ -1,8 +1,8 @@
 from pydantic import BaseModel
-from numpy import datetime64, float32
+from datetime import datetime
 
 
 class WaveProperties(BaseModel):
-    waveTime: datetime64
-    waveHeight: float32
-    wavePeriod: float32
+    waveTime: datetime
+    waveHeight: float
+    wavePeriod: float
