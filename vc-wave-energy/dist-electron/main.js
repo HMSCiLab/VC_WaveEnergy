@@ -16060,7 +16060,8 @@ function startPyPipe() {
     ["../pacwave-pipe/src/pipeline/main.py"],
     {
       env: {
-        ...process.env
+        ...process.env,
+        WAVE_ENERGY_APP_ROOT: APP_ROOT
       }
     }
   );
@@ -16087,6 +16088,9 @@ setGlobalDispatcher_1(new Agent_1({
   socketPath: SOCK_PATH
 }));
 async function initPacWavePipe() {
+  restartPyPipe();
+}
+async function CheckPacWavePipe() {
   setInterval(tryStatus, TRY_INTERVAL);
 }
 async function tryStatus() {
@@ -16102,13 +16106,32 @@ async function tryStatus() {
     failures = 0;
   } catch (error) {
     failures++;
-    console.warn(`Health check failed (${failures})`);
+    console.warn(`PyPipe start failures: (${failures}/${PIPE_MAX_TRIES})`);
     if (failures >= PIPE_MAX_TRIES) {
       console.error("Python appears hung — restarting");
       failures = 0;
       restartPyPipe();
     }
   }
+}
+async function getCdipData() {
+  try {
+    const { statusCode, body: body2 } = await request("http://localhost/data/cdip", {
+      headersTimeout: 1e4,
+      bodyTimeout: 1e4
+    });
+    if (statusCode != 200) {
+      throw new Error(`Bad status: ${statusCode}`);
+    }
+    const data = await body2.json();
+    return data;
+  } catch (err) {
+    console.error("CDIP fetch failed:", err);
+    throw err;
+  }
+}
+function registerPyPipeHandlers() {
+  ipcMain.handle("get-wave-data", getCdipData);
 }
 const VITE_DEV_SERVER_URL = process.env["VITE_DEV_SERVER_URL"];
 const MAIN_DIST = path.join(APP_ROOT, "dist-electron");
@@ -16149,6 +16172,8 @@ app.whenReady().then(() => {
   initArduino(safeSend);
   registerArduinoHandlers();
   initPacWavePipe();
+  CheckPacWavePipe();
+  registerPyPipeHandlers();
 });
 function safeSend(channel, ...args) {
   if (win && !win.isDestroyed()) {

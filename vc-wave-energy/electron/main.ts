@@ -1,7 +1,7 @@
 import { app, BrowserWindow } from 'electron'
 import path from 'node:path'
 import { cleanup, initArduino, registerArduinoHandlers } from './arduinoInterface'
-import { initPacWavePipe } from './pythonInterface'
+import { CheckPacWavePipe, initPacWavePipe, registerPyPipeHandlers } from './pythonInterface'
 import { APP_ROOT, ELECTRON_DIST } from './paths'
 
 
@@ -63,6 +63,8 @@ app.whenReady().then(() => {
   initArduino(safeSend);
   registerArduinoHandlers();
   initPacWavePipe();
+  CheckPacWavePipe();
+  registerPyPipeHandlers();
 })
 
 

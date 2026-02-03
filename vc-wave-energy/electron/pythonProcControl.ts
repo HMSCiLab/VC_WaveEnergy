@@ -25,6 +25,7 @@ function startPyPipe(){
         PY_BIN, ['../pacwave-pipe/src/pipeline/main.py'], {
             env: {
                 ...process.env,
+                WAVE_ENERGY_APP_ROOT: APP_ROOT,
             }
         }
     )

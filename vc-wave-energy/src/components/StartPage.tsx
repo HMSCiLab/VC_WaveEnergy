@@ -28,6 +28,11 @@ function StartPage() {
     console.log(whichButton);
   };
 
+  const getCdipData = async () => {
+    const data = await window.ipcRenderer.invoke('get-wave-data');
+    console.log(data);
+  }
+
   const buttonStyles: string =
     "bg-gradient-to-b from-[#fed9b7]/95 via-[#fed9b7]/85 to-[#fdfcdc]/80 text-gray-700 rounded-full drop-shadow-xl/25 font-bold tracking-wider active:from-[#f07167]/80 active:to-[#fed9b7]/80 active:scale-95 px-6 py-4 sm:px-8 sm:py-5 md:px-10 md:py-6 lg:px-8 lg:py-10 text-lg sm:text-2xl md:text-3xl lg:text-4xl whitespace-pre-line";
 
@@ -58,7 +63,7 @@ function StartPage() {
 
             <Button
               text={"See real-time\nwaves"}
-              onClick={onClick}
+              onClick={getCdipData}
               styles={buttonStyles}
             />
           </>

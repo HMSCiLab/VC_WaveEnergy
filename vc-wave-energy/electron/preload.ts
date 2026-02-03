@@ -23,8 +23,15 @@ contextBridge.exposeInMainWorld('ipcRenderer', {
   // ...
 })
 
-contextBridge.exposeInMainWorld('arduinoAPI', {
+const PACWAVE_API = {
+  requestWaveData: () => {ipcRenderer.invoke("get-wave-data")}
+}
+
+const ARDUINO_API = {
   sendWave: (selected: {size: number, period: number}) => {
     ipcRenderer.invoke('send-wave', selected);
   },
-});
+}
+
+contextBridge.exposeInMainWorld('arduinoAPI', ARDUINO_API);
+contextBridge.exposeInMainWorld('pacwaveAPI', PACWAVE_API)

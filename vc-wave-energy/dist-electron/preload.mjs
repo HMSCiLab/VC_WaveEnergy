@@ -20,8 +20,15 @@ electron.contextBridge.exposeInMainWorld("ipcRenderer", {
   // You can expose other APTs you need here.
   // ...
 });
-electron.contextBridge.exposeInMainWorld("arduinoAPI", {
+const PACWAVE_API = {
+  requestWaveData: () => {
+    electron.ipcRenderer.invoke("get-wave-data");
+  }
+};
+const ARDUINO_API = {
   sendWave: (selected) => {
     electron.ipcRenderer.invoke("send-wave", selected);
   }
-});
+};
+electron.contextBridge.exposeInMainWorld("arduinoAPI", ARDUINO_API);
+electron.contextBridge.exposeInMainWorld("pacwaveAPI", PACWAVE_API);
