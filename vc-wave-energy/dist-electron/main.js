@@ -12,7 +12,6 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
 var __privateMethod = (obj, member, method) => (__accessCheck(obj, member, "access private method"), method);
 var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _A, _B, _C, _D, _E, _F, _G, _H, _I, _J, _K, _L, _M, _N, _O, _P, _Q, _R, _dispatcher, _dispatch, _S, _T, _U;
 import { ipcMain, app, BrowserWindow } from "electron";
-import require$$1$2, { fileURLToPath } from "node:url";
 import path from "node:path";
 import { createRequire } from "node:module";
 import require$$0$1 from "node:assert";
@@ -29,10 +28,13 @@ import require$$1$1 from "node:zlib";
 import require$$5$1 from "node:perf_hooks";
 import require$$8$1 from "node:util/types";
 import require$$1 from "node:worker_threads";
+import require$$1$2, { fileURLToPath } from "node:url";
 import require$$5$2 from "node:async_hooks";
 import require$$1$3 from "node:console";
 import require$$1$4 from "node:dns";
 import require$$5$3 from "string_decoder";
+import { spawn } from "node:child_process";
+import fs, { existsSync, unlinkSync } from "node:fs";
 const require$1 = createRequire(import.meta.url);
 const { SerialPort } = require$1("serialport");
 const { ReadlineParser } = require$1("@serialport/parser-readline");
@@ -16032,27 +16034,92 @@ makeDispatcher(api.pipeline);
 makeDispatcher(api.connect);
 makeDispatcher(api.upgrade);
 const { EventSource } = requireEventsource();
-const SOCK_PATH = "/tmp/uvicorn_pacwave_pipe.sock";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const ELECTRON_DIST = __dirname;
+const APP_ROOT = path.join(__dirname, "..");
+const CONFIG_PATH = path.join(APP_ROOT, "pacwave.config.json");
+const config = JSON.parse(
+  fs.readFileSync(CONFIG_PATH, "utf-8")
+);
+const SOCK_PATH = config.ipc.uds_path;
+const TRY_INTERVAL = config.healthcheck.interval_ms;
+const PIPE_MAX_TRIES = config.healthcheck.max_failures;
+let pyProc = null;
+const PY_BIN = path.join(path.dirname(APP_ROOT), ".venv/bin/python");
+function check_sock() {
+  if (existsSync(SOCK_PATH)) {
+    unlinkSync(SOCK_PATH);
+  }
+}
+function startPyPipe() {
+  if (pyProc) return;
+  check_sock();
+  pyProc = spawn(
+    PY_BIN,
+    ["../pacwave-pipe/src/pipeline/main.py"],
+    {
+      env: {
+        ...process.env
+      }
+    }
+  );
+  pyProc.stdout.on("data", (d) => console.log("[python]", d.toString()));
+  pyProc.stderr.on("data", (d) => console.error("[python]", d.toString()));
+  pyProc.on("exit", (code, signal) => {
+    console.warn(`Python exited (code=${code}, signal=${signal})`);
+    pyProc = null;
+  });
+}
+function killPyPipe() {
+  if (!pyProc) return;
+  console.warn("Killing Python process");
+  pyProc.kill("SIGKILL");
+  pyProc = null;
+  check_sock();
+}
+function restartPyPipe() {
+  killPyPipe();
+  startPyPipe();
+}
+let failures = 0;
 setGlobalDispatcher_1(new Agent_1({
   socketPath: SOCK_PATH
 }));
-async function getPipeStatus() {
-  const { body: body2 } = await request("http://localhost/data/cdip");
-  const data = await body2.json();
-  console.log(data);
+async function initPacWavePipe() {
+  setInterval(tryStatus, TRY_INTERVAL);
 }
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-process.env.APP_ROOT = path.join(__dirname, "..");
+async function tryStatus() {
+  try {
+    const { statusCode, body: body2 } = await request("http://localhost/status", {
+      headersTimeout: 1e3,
+      bodyTimeout: 1e3
+    });
+    if (statusCode != 200) {
+      throw new Error(`Bad status: ${statusCode}`);
+    }
+    await body2.json();
+    failures = 0;
+  } catch (error) {
+    failures++;
+    console.warn(`Health check failed (${failures})`);
+    if (failures >= PIPE_MAX_TRIES) {
+      console.error("Python appears hung — restarting");
+      failures = 0;
+      restartPyPipe();
+    }
+  }
+}
 const VITE_DEV_SERVER_URL = process.env["VITE_DEV_SERVER_URL"];
-const MAIN_DIST = path.join(process.env.APP_ROOT, "dist-electron");
-const RENDERER_DIST = path.join(process.env.APP_ROOT, "dist");
-process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL ? path.join(process.env.APP_ROOT, "public") : RENDERER_DIST;
+const MAIN_DIST = path.join(APP_ROOT, "dist-electron");
+const RENDERER_DIST = path.join(APP_ROOT, "dist");
+process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL ? path.join(APP_ROOT, "public") : RENDERER_DIST;
 let win;
 function createWindow() {
   win = new BrowserWindow({
     icon: path.join(process.env.VITE_PUBLIC, "electron-vite.svg"),
     webPreferences: {
-      preload: path.join(__dirname, "preload.mjs")
+      preload: path.join(ELECTRON_DIST, "preload.mjs")
     },
     width: 1024,
     height: 1366
@@ -16081,7 +16148,7 @@ app.whenReady().then(() => {
   createWindow();
   initArduino(safeSend);
   registerArduinoHandlers();
-  getPipeStatus();
+  initPacWavePipe();
 });
 function safeSend(channel, ...args) {
   if (win && !win.isDestroyed()) {

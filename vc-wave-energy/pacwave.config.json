@@ -1,0 +1,9 @@
+{
+  "ipc": {
+    "uds_path": "/tmp/uvicorn_pacwave_pipe.sock"
+  },
+  "healthcheck": {
+    "interval_ms": 2000,
+    "max_failures": 3
+  }
+}
