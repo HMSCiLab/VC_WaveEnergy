@@ -18,9 +18,6 @@ contextBridge.exposeInMainWorld('ipcRenderer', {
     const [channel, ...omit] = args
     return ipcRenderer.invoke(channel, ...omit)
   },
-
-  // You can expose other APTs you need here.
-  // ...
 })
 
 const PACWAVE_API = {
@@ -29,7 +26,7 @@ const PACWAVE_API = {
 
 const ARDUINO_API = {
   sendWave: (selected: {size: number, period: number}) => {
-    ipcRenderer.invoke('send-wave', selected);
+    ipcRenderer.invoke('send-wave', event, selected);
   },
 }
 

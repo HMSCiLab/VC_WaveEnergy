@@ -3,7 +3,7 @@
     "uds_path": "/tmp/uvicorn_pacwave_pipe.sock"
   },
   "healthcheck": {
-    "interval_ms": 2000,
+    "interval_ms": 6000,
     "max_failures": 3
   }
 }

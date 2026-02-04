@@ -6,4 +6,6 @@ const __dirname = path.dirname(__filename);
 
 export const ELECTRON_DIST = __dirname;
 export const APP_ROOT = path.join(__dirname, '..');
-export const CONFIG_PATH = path.join(APP_ROOT, 'pacwave.config.json');
+export const CONFIG_PATH = path.join(APP_ROOT, 'config');
+export const PACWAVE_CONFIG = path.join(CONFIG_PATH, 'pacwave.config.json');
+export const ARDUINO_CONFIG = path.join (CONFIG_PATH, 'arduino.config.json');

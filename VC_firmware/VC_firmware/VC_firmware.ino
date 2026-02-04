@@ -1,3 +1,4 @@
+#define ARDUINOJSON_ENABLE_NAN 1
 #include <stdlib.h>
 #include <string.h>
 #include <ArduinoJson.h>
@@ -9,12 +10,12 @@ void setup() {
 }
 
 void loop() {
-  String input;
-  listener(input);
-  // if (input.length() != 0 && validator(input) == 0) {
-  if (input.length() != 0) {
+  int go = 0;
+  JsonDocument json_req;
+  listener(json_req, go);
+  if (go == 1) {
     print_ten();    // Demonstration
-
+    go = 0;
 
   }
 }
@@ -26,10 +27,10 @@ void loop() {
 */
 void print_ten() {
     for (size_t i=0; i < 10; i++){
-      Serial.println(random(100));
+      send_json_response("WAVEDATA", random(100));
       delay(1000);
     }
-    Serial.println("Wave complete");
+    send_json_response("EOT", NAN);
 }
 
 /**
@@ -48,12 +49,23 @@ String get_input() {
 * Check Serial for communication, stores what it finds in the
 * @param input
 */
-void listener(String &input) {
+void listener(JsonDocument &json_req, int &go) {
   if (Serial.available()){
-    input = get_input();
-    Serial.println("Receiving input");
-    Serial.print("Input = ");
-    Serial.println(input);
+    String input = get_input();
+    // JsonDocument json_req;
+    DeserializationError err = deserializeJson(json_req, input);
+    if (err) {
+      Serial.print(F("deserializeJson() failed: "));
+      Serial.println(err.f_str());
+    }
+
+    const int user_height = json_req["height"];
+    const int user_period = json_req["period"];
+
+    send_json_response("DEBUG", user_height);
+    send_json_response("DEBUG", user_period);
+
+    go = 1;
   }
 }
 
@@ -70,6 +82,13 @@ void listener(String &input) {
 int validator(String input) {
   const String comparison = "hello";
   return input.compareTo(comparison);
+}
+
+void send_json_response(String mssg, float data) {
+  JsonDocument resp;
+  resp["mssg"] = mssg;
+  resp["data"] = data;
+  serializeJson(resp, Serial); 
 }
 
 

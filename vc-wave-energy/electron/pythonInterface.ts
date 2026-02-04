@@ -4,6 +4,7 @@ import { SOCK_PATH, PIPE_MAX_TRIES, TRY_INTERVAL } from './config';
 import { ipcMain } from 'electron';
 
 let failures = 0;
+let getting_data: boolean = false;
 
 // Set up a global agent that uses the Unix Domain Socket
 setGlobalDispatcher(new Agent({
@@ -16,16 +17,13 @@ export async function initPacWavePipe(){
 
 // Runs for lifetime of application
 export async function CheckPacWavePipe () {
-    setInterval(tryStatus, TRY_INTERVAL);
+    if (!getting_data) setInterval(tryStatus, TRY_INTERVAL);
 }
 
 async function tryStatus () {
     try  {
         // Try to access pipeline
-        const { statusCode, body } = await request('http://localhost/status', {
-            headersTimeout: 1000,
-            bodyTimeout: 1000
-        });
+        const { statusCode, body } = await request('http://localhost/status');
         if (statusCode != 200){
             throw new Error(`Bad status: ${statusCode}`);
         }
@@ -48,6 +46,7 @@ async function tryStatus () {
 
 async function getCdipData() {
     try {
+        getting_data = true;
         // Try to access pipeline
         const { statusCode, body } = await request('http://localhost/data/cdip', {
             headersTimeout: 10000,
@@ -58,6 +57,7 @@ async function getCdipData() {
         }
         // Success, fulfill promise
         const data = await body.json(); 
+        getting_data = false;
         return data
     } 
     catch (err) {

@@ -1,6 +1,12 @@
 import { ipcMain } from "electron";
 import { IpcSender } from "./types/ipc";
 import { createRequire } from 'node:module'
+import { 
+  FEATHER_PRODUCT_ID, 
+  FEATHER_VENDOR_ID,
+  BAUD_RATE,
+} from "./config";
+import JSON5 from 'json5'
 
 const require = createRequire(import.meta.url);
 const { SerialPort } = require('serialport');
@@ -18,12 +24,17 @@ export function initArduino(sender: IpcSender) {
     setInterval(tryArduinoConnection, 1000);
 }
 
+function decomposeLine(line: string): {mssg: string, data: number} {
+  line += '}';
+  return JSON5.parse(line)
+}
+
 async function tryArduinoConnection(){
   const ports = await SerialPort.list();
   const arduinoPort = ports.find((p: any) => 
     p.vendorId && (
-      p.vendorId === "239a" ||
-      p.productId === "800b"
+      p.vendorId === FEATHER_VENDOR_ID||
+      p.productId === FEATHER_PRODUCT_ID
     )
   );
 
@@ -31,7 +42,7 @@ async function tryArduinoConnection(){
     if (port && port.isOpen) {
       port.close();
       port = null;
-      send("main.ts (97) >> Arduino not connected.")
+      send("main.ts >> Arduino not connected.")
     }
     return;
   }
@@ -41,7 +52,7 @@ async function tryArduinoConnection(){
 
   port = new SerialPort({
     path: arduinoPort.path,
-    baudRate: 9600
+    baudRate: BAUD_RATE
   })
 
   port.on("open", () => {
@@ -60,25 +71,25 @@ async function tryArduinoConnection(){
     send("arduino-error", err.message);
   })
 
-  parser = port.pipe(new ReadlineParser({delimiter: '\n'}));
+  // parser = port.pipe(new ReadlineParser({delimiter: '\n'}));
+  parser = port.pipe(new ReadlineParser({delimiter: '}'}));
 
   // Receive serial info from arduino
   parser.on('data', (line: string) => {
-    const val: number = parseFloat(line);
-    if (isNaN(val)) {
-        console.log(line);
-        if (line === "Wave complete") {
-            console.log("main.ts >> Full wave: ", waveData)
-            send("complete-wave", waveData);
-            waveData = [];
-        } 
-        else {
-        console.log("main.ts >> Message from arduino: ", line); 
-        }
-    }
-    else {
-        waveData.push(val);
-        send("wave-val", val);
+    const response: {mssg: string, data: number} = decomposeLine(line);
+    console.log("Message: " + response.mssg);
+    switch(response.mssg) {
+      case "DEBUG":
+        console.log(response.data);
+        break;
+      case "EOT":
+        send("complete-wave", waveData);
+        waveData = [];
+        break;
+      case "WAVEDATA":
+        waveData.push(response.data);
+        send("wave-val", response.data);
+        break;
     }}
   );
 }
@@ -103,7 +114,8 @@ export function registerArduinoHandlers() {
         return { connected: !!(port && port.isOpen) }
     })
 
-    ipcMain.handle('send-wave', async(selected) => {
+    ipcMain.handle('send-wave', async(event, selected) => {
+        // selected -> {size: number, period: number}
         const cmmd: string = JSON.stringify(selected);
         port.write(cmmd + '\n', (err: Error | null | undefined) => {
             err 

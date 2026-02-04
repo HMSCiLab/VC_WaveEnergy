@@ -3,7 +3,7 @@ const electron = require("electron");
 electron.contextBridge.exposeInMainWorld("ipcRenderer", {
   on(...args) {
     const [channel, listener] = args;
-    return electron.ipcRenderer.on(channel, (event, ...args2) => listener(event, ...args2));
+    return electron.ipcRenderer.on(channel, (event2, ...args2) => listener(event2, ...args2));
   },
   off(...args) {
     const [channel, ...omit] = args;
@@ -17,8 +17,6 @@ electron.contextBridge.exposeInMainWorld("ipcRenderer", {
     const [channel, ...omit] = args;
     return electron.ipcRenderer.invoke(channel, ...omit);
   }
-  // You can expose other APTs you need here.
-  // ...
 });
 const PACWAVE_API = {
   requestWaveData: () => {
@@ -27,7 +25,7 @@ const PACWAVE_API = {
 };
 const ARDUINO_API = {
   sendWave: (selected) => {
-    electron.ipcRenderer.invoke("send-wave", selected);
+    electron.ipcRenderer.invoke("send-wave", event, selected);
   }
 };
 electron.contextBridge.exposeInMainWorld("arduinoAPI", ARDUINO_API);

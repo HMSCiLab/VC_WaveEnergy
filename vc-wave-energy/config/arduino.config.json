@@ -1,0 +1,8 @@
+{
+    "ports": {
+        "featherM0_vendor_id": "239a",
+        "featherM0_wifi_product_id": "800b"
+    },
+    "baud_rate" : 9600
+    
+}

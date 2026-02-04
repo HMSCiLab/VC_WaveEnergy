@@ -73,6 +73,7 @@ function WaveReadPage() {
   }
 
   function genInfo() {
+    // console.log(waveData);
     const meanEnergy = mean(waveData);
     const energy: number = meanEnergy * selectedHeight;
     setEnergyMean(meanEnergy);

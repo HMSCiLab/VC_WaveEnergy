@@ -11,7 +11,7 @@ import json
 APP_ROOT = Path(
     os.environ["WAVE_ENERGY_APP_ROOT"]
 ).resolve()
-CONFIG_PATH = APP_ROOT / "pacwave.config.json"
+CONFIG_PATH = APP_ROOT / "config" / "pacwave.config.json"
 
 with open(CONFIG_PATH) as f:
     config = json.load(f)
