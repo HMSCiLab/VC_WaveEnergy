@@ -73,7 +73,6 @@ function WaveReadPage() {
   }
 
   function genInfo() {
-    // console.log(waveData);
     const meanEnergy = mean(waveData);
     const energy: number = meanEnergy * selectedHeight;
     setEnergyMean(meanEnergy);
@@ -89,6 +88,7 @@ function WaveReadPage() {
     await countdown().then(() => console.log("countdown complete"));
   }
 
+  // TODO TODO TODO****************************************************************
   async function countdown(): Promise<void> {
     for (let i = readTime; i > 1; i--) {
       if (window.location.href !== "http://localhost:5173/wave-read-page") {

@@ -17,13 +17,16 @@ function WaveSelectorPage() {
   const { setSelectedHeight, setSelectedPeriod } = useAppContext();
   const onClick = (text: string) => {
     console.log(
-      `Sending wave of size ${selected?.height}m and period of ${selected?.period}s`
+      `Sending wave of size ${selected?.height}m and period of ${selected?.period}s`,
     );
     if (selected) {
       setSelectedHeight(selected?.height);
       setSelectedPeriod(selected?.period);
       window.ipcRenderer.invoke("send-wave", selected);
     }
+  };
+  const onGoNotReady = () => {
+    alert("Please ensure 'Height' and 'Period' above have values.");
   };
 
   // RIVE SEGMENT
@@ -52,16 +55,16 @@ function WaveSelectorPage() {
   const activeIndex = selection1
     ? 1
     : selection2
-    ? 2
-    : selection3
-    ? 3
-    : selection4
-    ? 4
-    : selection5
-    ? 5
-    : selection6
-    ? 6
-    : 0;
+      ? 2
+      : selection3
+        ? 3
+        : selection4
+          ? 4
+          : selection5
+            ? 5
+            : selection6
+              ? 6
+              : 0;
 
   const options = [
     { height: 3.0, period: 6.0 },
@@ -115,13 +118,23 @@ function WaveSelectorPage() {
             />
           </dl>
           {/* Buttons */}
-          <Link to="/wave-read-page">
+          {selected === undefined && (
             <Button
-              onClick={onClick}
-              text="GO"
+              onClick={onGoNotReady}
+              text="Selecting..."
               styles="bg-[#95d5b2]/90 border-4 border-[#52b788] px-24 py-8 text-4xl rounded-full font-bold tracking-widest active:bg-[#52b788]/70 active:scale-95 active:border-4 active:border-[#52b788]"
+              disabled={true}
             />
-          </Link>
+          )}
+          {selected !== undefined && (
+            <Link to="/wave-read-page">
+              <Button
+                onClick={onClick}
+                text="GO"
+                styles="bg-[#95d5b2]/90 border-4 border-[#52b788] px-24 py-8 text-4xl rounded-full font-bold tracking-widest active:bg-[#52b788]/70 active:scale-95 active:border-4 active:border-[#52b788]"
+              />
+            </Link>
+          )}
         </div>
       </div>
     </div>

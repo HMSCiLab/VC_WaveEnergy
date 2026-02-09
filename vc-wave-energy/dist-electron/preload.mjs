@@ -25,7 +25,14 @@ const PACWAVE_API = {
 };
 const ARDUINO_API = {
   sendWave: (selected) => {
-    electron.ipcRenderer.invoke("send-wave", event, selected);
+    if (selected.size !== void 0 || selected.period !== void 0) {
+      electron.ipcRenderer.invoke("send-wave", event, selected);
+    } else {
+      electron.ipcRenderer.invoke("send-wave", event, {
+        size: 3,
+        period: 7
+      });
+    }
   }
 };
 electron.contextBridge.exposeInMainWorld("arduinoAPI", ARDUINO_API);

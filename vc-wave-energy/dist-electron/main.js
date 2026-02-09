@@ -1148,10 +1148,8 @@ function initArduino(sender2) {
   setInterval(tryArduinoConnection, 1e3);
 }
 function decomposeLine(line2) {
-  console.log(line2);
   line2 += "}";
-  const response2 = lib.parse(line2);
-  return response2;
+  return lib.parse(line2);
 }
 async function tryArduinoConnection() {
   const ports = await SerialPort.list();
@@ -1188,19 +1186,20 @@ async function tryArduinoConnection() {
   parser.on(
     "data",
     (line2) => {
-      const response2 = decomposeLine(line2);
-      console.log("Message: " + response2.mssg);
-      switch (response2.mssg) {
+      const resp = decomposeLine(line2);
+      switch (resp.channel) {
         case "DEBUG":
-          console.log(response2.data);
+          console.log(`Channel: ${resp.channel}
+Message:${resp.mssg}
+Data: ${resp.data}`);
           break;
         case "EOT":
           send("complete-wave", waveData);
           waveData = [];
           break;
         case "WAVEDATA":
-          waveData.push(response2.data);
-          send("wave-val", response2.data);
+          waveData.push(resp.data);
+          send("wave-val", resp.data);
           break;
       }
     }

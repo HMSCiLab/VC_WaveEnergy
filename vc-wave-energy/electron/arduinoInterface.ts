@@ -19,12 +19,18 @@ let waveData: number[] = [];
 let parser: any = null;
 let send: IpcSender;
 
+interface response {
+    channel: string;
+    mssg: string;
+    data: number;
+}
+
 export function initArduino(sender: IpcSender) {
     send = sender;
     setInterval(tryArduinoConnection, 1000);
 }
 
-function decomposeLine(line: string): {mssg: string, data: number} {
+function decomposeLine(line: string): response {
   line += '}';
   return JSON5.parse(line)
 }
@@ -76,19 +82,18 @@ async function tryArduinoConnection(){
 
   // Receive serial info from arduino
   parser.on('data', (line: string) => {
-    const response: {mssg: string, data: number} = decomposeLine(line);
-    console.log("Message: " + response.mssg);
-    switch(response.mssg) {
+    const resp: response = decomposeLine(line);
+    switch(resp.channel) {
       case "DEBUG":
-        console.log(response.data);
+        console.log(`Channel: ${resp.channel}\nMessage:${resp.mssg}\nData: ${resp.data}`);
         break;
       case "EOT":
         send("complete-wave", waveData);
         waveData = [];
         break;
       case "WAVEDATA":
-        waveData.push(response.data);
-        send("wave-val", response.data);
+        waveData.push(resp.data);
+        send("wave-val", resp.data);
         break;
     }}
   );

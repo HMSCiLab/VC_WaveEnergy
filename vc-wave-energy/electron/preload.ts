@@ -26,7 +26,15 @@ const PACWAVE_API = {
 
 const ARDUINO_API = {
   sendWave: (selected: {size: number, period: number}) => {
-    ipcRenderer.invoke('send-wave', event, selected);
+    if (selected.size !== undefined || selected.period !== undefined ){
+      ipcRenderer.invoke('send-wave', event, selected);
+    } 
+    else {
+      ipcRenderer.invoke('send-wave', event, {
+        size: 3,
+        period: 7
+      })
+    }
   },
 }
 
