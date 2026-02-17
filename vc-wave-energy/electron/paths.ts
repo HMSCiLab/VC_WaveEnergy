@@ -9,3 +9,4 @@ export const APP_ROOT = path.join(__dirname, '..');
 export const CONFIG_PATH = path.join(APP_ROOT, 'config');
 export const PACWAVE_CONFIG = path.join(CONFIG_PATH, 'pacwave.config.json');
 export const ARDUINO_CONFIG = path.join (CONFIG_PATH, 'arduino.config.json');
+export const CUSTOM_WAVE_CONFIG = path.join (CONFIG_PATH, 'customwave.config.json');

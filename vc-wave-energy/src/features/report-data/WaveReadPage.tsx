@@ -5,12 +5,12 @@ import {
   Layout,
   useStateMachineInput,
 } from "@rive-app/react-canvas";
-import bgImage from "../assets/background-ocean.jpg";
+import bgImage from "../../assets/background-ocean.jpg";
 import { useEffect, useState, useRef } from "react";
 import { IpcRendererEvent } from "electron";
-import { useAppContext } from "./util-components/AppContext";
+import { useAppContext } from "../../AppContext";
 import { mean } from "simple-statistics";
-import LoadingCircle from "./util-components/LoadingCircle";
+import LoadingCircle from "../../components/LoadingCircle";
 import { Link } from "react-router-dom";
 
 function WaveReadPage() {
@@ -30,7 +30,7 @@ function WaveReadPage() {
     riveMeter,
     "State Machine 1",
     "energy",
-    1
+    1,
   );
   const [energyVal, setEnergyVal] = useState<number>(1);
   const targetValue = useRef(1);
@@ -55,7 +55,7 @@ function WaveReadPage() {
 
     meterEnergy.value = currentValue.current;
     const closeEnough: number = Math.abs(
-      targetValue.current - currentValue.current
+      targetValue.current - currentValue.current,
     );
     setEnergyVal(Math.floor(currentValue.current));
 
@@ -83,7 +83,7 @@ function WaveReadPage() {
   async function manageCountdown() {
     document.documentElement.style.setProperty(
       "--circle-dur",
-      `${readTime.toString()}s`
+      `${readTime.toString()}s`,
     );
     await countdown().then(() => console.log("countdown complete"));
   }
@@ -160,6 +160,13 @@ function WaveReadPage() {
       manageCountdown();
     }
   }, [showInfo]);
+
+  useEffect(() => {
+    const onErrorII = () => {
+      window.location.href = "/";
+    };
+    window.ipcRenderer.on("ERROR-II", onErrorII);
+  }, []);
 
   return (
     // Main Container

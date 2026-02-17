@@ -1,9 +1,7 @@
-import StartPage from './components/StartPage';
+import StartPage from "./features/start/StartPage";
 
 function App() {
-  return (
-    <StartPage />
-  );
+  return <StartPage />;
 }
 
 export default App;

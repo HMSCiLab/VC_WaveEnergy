@@ -3,9 +3,9 @@ import ReactDOM from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import WaveSelectorPage from "./components/WaveSelectorPage.tsx";
-import WaveReadPage from "./components/WaveReadPage.tsx";
-import ContextProvider from "./components/util-components/AppContext.tsx";
+import WaveSelectorPage from "./features/custom-wave/WaveSelectorPage.tsx";
+import WaveReadPage from "./features/report-data/WaveReadPage.tsx";
+import ContextProvider from "./AppContext.tsx";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
@@ -18,7 +18,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         </Routes>
       </BrowserRouter>
     </ContextProvider>
-  </React.StrictMode>
+  </React.StrictMode>,
 );
 
 // Use contextBridge

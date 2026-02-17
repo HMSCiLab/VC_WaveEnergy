@@ -95,6 +95,11 @@ async function tryArduinoConnection(){
         waveData.push(resp.data);
         send("wave-val", resp.data);
         break;
+      case "ERROR-II":
+        console.log("ERROR FROM ARDUINO.");
+        console.log(`Message: ${resp.mssg}`);
+        send("ERROR-II");
+        break;
     }}
   );
 }

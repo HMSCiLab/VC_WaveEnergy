@@ -33,6 +33,10 @@ const ARDUINO_API = {
         period: 7
       });
     }
+  },
+  selectionOptions: () => {
+    electron.ipcRenderer.invoke("get-height-options", event);
+    electron.ipcRenderer.invoke("get-period-options", event);
   }
 };
 electron.contextBridge.exposeInMainWorld("arduinoAPI", ARDUINO_API);

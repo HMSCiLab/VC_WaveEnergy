@@ -8,6 +8,11 @@ type AppContextType = {
   setSelectedHeight: React.Dispatch<React.SetStateAction<number>>;
   selectedPeriod: number;
   setSelectedPeriod: React.Dispatch<React.SetStateAction<number>>;
+
+  activeHeightIndex: number;
+  setActiveHeightIndex: React.Dispatch<React.SetStateAction<number>>;
+  activePeriodIndex: number;
+  setActivePeriodIndex: React.Dispatch<React.SetStateAction<number>>;
 };
 const AppContext = createContext<AppContextType | null>(null);
 
@@ -19,6 +24,8 @@ export default function ContextProvider({
   const [waveData, setWaveData] = useState<number[]>([]);
   const [selectedHeight, setSelectedHeight] = useState<number>(0);
   const [selectedPeriod, setSelectedPeriod] = useState<number>(0);
+  const [activeHeightIndex, setActiveHeightIndex] = useState(0);
+  const [activePeriodIndex, setActivePeriodIndex] = useState(0);
   return (
     <AppContext.Provider
       value={{
@@ -28,6 +35,10 @@ export default function ContextProvider({
         setSelectedHeight,
         selectedPeriod,
         setSelectedPeriod,
+        activeHeightIndex,
+        setActiveHeightIndex,
+        activePeriodIndex,
+        setActivePeriodIndex
       }}
     >
       {children}
