@@ -1,42 +1,53 @@
 #pragma once
+#include <stdint.h>
 
-// INPUT CLAMPS
-#define HIGH_HEIGHT_VAL 12
-#define LOW_HEIGHT_VAL 0
-#define HIGH_PERIOD_VAL 16
-#define LOW_PERIOD_VAL 3
+namespace config {
 
-
-// ERROR CHANNELS
-#define FAILED_TO_RUN_CHANNEL "ERROR-FTR"
-#define INVALID_INPUT_CHANNEL "ERROR-II"
-
-
-// CALIBRATION CONSTANTS
-/**
-* Base height speed represents the PWM (speed of paddle
-* movement) required to generate a 1 foot wave. 
-*/
-#define BASE_HEIGHT_SPEED 20
-
-/**
-* Base return speed represents the PWM (speed of paddle
-* movement) required to return the paddle to the start
-* in order to generate a 3s period for a 1 foot wave.
-*/
-#define BASE_RETURN_SPEED 10
-
-/**
-* Base height represents the PWM (speed of paddle
-* movement) required to generate a 1 foot wave. 
-*/
-#define 
+  // PADDLE PINS
+  constexpr uint8_t MOTOR_ENABLE_PIN = 1;
+  constexpr uint8_t MOTOR_DIRECTION_PIN = 1;
+  constexpr uint8_t MOTOR_PWM_PIN = 1;
+  constexpr uint8_t LIMIT_SWITCH_A = 1;
+  constexpr uint8_t LIMIT_SWITCH_B = 1;
+  constexpr uint8_t LIMIT_SWITCH_C = 1;
+  constexpr uint8_t LIMIT_SWITCH_D = 1;
 
 
-// EXPORT
-constexpr int HIGH_HEIGHT = HIGH_HEIGHT_VAL;
-constexpr int LOW_HEIGHT = LOW_HEIGHT_VAL;
-constexpr int HIGH_PERIOD = HIGH_PERIOD_VAL;
-constexpr int LOW_PERIOD = LOW_PERIOD_VAL;
-constexpr const char* INVALID_INPUT_ERROR = INVALID_INPUT_CHANNEL;
-constexpr const char* FAILED_TO_RUN_ERROR = FAILED_TO_RUN_CHANNEL;
+  // ELECTRICITY METER PINS
+  // ?????????
+  // ?????????
+  // ?????????
+
+
+  // CALIBRATION CONSTANTS
+  /**
+  * Base height speed represents the PWM (speed of paddle
+  * movement) required to generate a 1 foot wave. 
+  */
+  constexpr int BASE_HEIGHT_SPEED = 20;
+
+  /**
+  * Base return speed represents the PWM (speed of paddle
+  * movement) required to return the paddle to the start
+  * in order to generate a 3s period for a 1 foot wave.
+  */
+  constexpr int BASE_RETURN_SPEED = 10;
+
+  /**
+  * Length of time (ms) the paddle will run. This constant
+  * is used to calculate how many waves will be created given
+  * the input period.
+  */
+  constexpr int BASE_RUN_TIME = 30000;
+
+  // // INPUT CLAMPS
+  constexpr int HIGH_HEIGHT = 12;
+  constexpr int LOW_HEIGHT = 0;
+  constexpr int HIGH_PERIOD = 16;
+  constexpr int LOW_PERIOD = 3;
+
+
+  // ERROR CHANNELS
+  constexpr const char* FAILED_TO_RUN_ERROR = "ERROR-FTR";
+  constexpr const char* INVALID_INPUT_ERROR = "ERROR-II";
+}
