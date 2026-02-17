@@ -47,9 +47,10 @@ class jsonSender: public jsonMessage {
         serializeJson(doc, Serial); 
         return 1;
         }
-      doc["channel"] = "ERROR";
-      doc["mssg"] = "Failed channel check";
+      doc["channel"] = FAILED_TO_RUN_ERROR;
+      doc["mssg"] = "Message channel unknown";
       doc["data"] = NAN;
+      
       serializeJson(doc, Serial);
       return 0;
     }

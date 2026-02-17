@@ -1,28 +1,42 @@
 #pragma once
 
-#ifndef HIGH_HEIGHT_VAL
+// INPUT CLAMPS
 #define HIGH_HEIGHT_VAL 12
-#endif
-
-#ifndef LOW_HEIGHT_VAL
 #define LOW_HEIGHT_VAL 0
-#endif
-
-#ifndef HIGH_PERIOD_VAL
 #define HIGH_PERIOD_VAL 16
-#endif
-
-#ifndef LOW_PERIOD_VAL
 #define LOW_PERIOD_VAL 3
-#endif
 
-#ifndef VALID_CHANNEL_VALS
-#define VALID_CHANNEL_VALS {"DEBUG", "ERROR", "WAVEDATA", "EOT"}
-#endif
 
+// ERROR CHANNELS
+#define FAILED_TO_RUN_CHANNEL "ERROR-FTR"
+#define INVALID_INPUT_CHANNEL "ERROR-II"
+
+
+// CALIBRATION CONSTANTS
+/**
+* Base height speed represents the PWM (speed of paddle
+* movement) required to generate a 1 foot wave. 
+*/
+#define BASE_HEIGHT_SPEED 20
+
+/**
+* Base return speed represents the PWM (speed of paddle
+* movement) required to return the paddle to the start
+* in order to generate a 3s period for a 1 foot wave.
+*/
+#define BASE_RETURN_SPEED 10
+
+/**
+* Base height represents the PWM (speed of paddle
+* movement) required to generate a 1 foot wave. 
+*/
+#define 
+
+
+// EXPORT
 constexpr int HIGH_HEIGHT = HIGH_HEIGHT_VAL;
 constexpr int LOW_HEIGHT = LOW_HEIGHT_VAL;
 constexpr int HIGH_PERIOD = HIGH_PERIOD_VAL;
 constexpr int LOW_PERIOD = LOW_PERIOD_VAL;
-// const String VALID_CHANNELS[] = {"DEBUG", "ERROR", "WAVEDATA", "EOT"};
-// constexpr size_t VALID_CHANNEL_COUNT = sizeof(VALID_CHANNELS) / sizeof(VALID_CHANNELS[0]);
+constexpr const char* INVALID_INPUT_ERROR = INVALID_INPUT_CHANNEL;
+constexpr const char* FAILED_TO_RUN_ERROR = FAILED_TO_RUN_CHANNEL;

@@ -69,7 +69,7 @@ int validator(int &user_height, int &user_period, String &input) {
   JsonDocument json_req;
   DeserializationError err = deserializeJson(json_req, input);
   if (err) {
-    send_message("DEBUG", "deserializeJson failed!", NAN);
+    send_message(FAILED_TO_RUN_ERROR, "Failed to deserialize", NAN);
     return 0;
   }
 
@@ -78,14 +78,14 @@ int validator(int &user_height, int &user_period, String &input) {
   send_message("DEBUG", "user_height", user_height);
 
   if (std::isnan(user_height) || isnan(user_period)) {
-    send_message("DEBUG", "Undefined user input", NAN);
+    send_message(INVALID_INPUT_ERROR, "Invalid user input", NAN);
   }
 
   int height_check = check_height(user_height);
   int period_check = check_period(user_period);
 
   int total_check = height_check && period_check;
-  if (!total_check) send_message("DEBUG", "Height or Period out of range", NAN);
+  if (!total_check) send_message(INVALID_INPUT_ERROR, "Invalid user input", NAN);
   return total_check;
 }
 
@@ -101,14 +101,4 @@ void send_message(String channel, String mssg, float data) {
   jsonSender message(channel, mssg, data);
   message.send_json_response();
 }
-
-
-
-
-
-
-
-
-
-
 
