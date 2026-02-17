@@ -3,11 +3,24 @@
 #include "src/json_handler.h"
 #include "src/config.h"
 #include "src/interface.h"
+#include "src/paddle.h"
 
 
 void setup() {
   Serial.begin(9600);
-  // Initialize motor enable pin, limits or encoder pins, and PWM pin.
+  
+  // PADDLE PWM/ENABLE/DIRECTION
+  pinMode(config::MOTOR_DIRECTION_PIN, OUTPUT);
+  pinMode(config::MOTOR_ENABLE_PIN, OUTPUT);
+  digitalWrite(config::MOTOR_ENABLE_PIN, LOW);
+  pinMode(config::MOTOR_PWM_PIN, OUTPUT);
+  analogWrite(config::MOTOR_PWM_PIN, 0);
+
+  // LIMIT SWITCHES
+  pinMode(config::LIMIT_SWITCH_A, INPUT);
+  pinMode(config::LIMIT_SWITCH_B, INPUT);
+  pinMode(config::LIMIT_SWITCH_C, INPUT);
+  pinMode(config::LIMIT_SWITCH_D, INPUT);
 }
 
 void loop() {
@@ -16,6 +29,7 @@ void loop() {
   int check = listener(user_height, user_period);
   if (check) {
     print_ten();    // Demonstration
+    // generate_wave(user_height, user_period);   // Real life
   }
 }
 

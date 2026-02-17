@@ -4,13 +4,13 @@
 namespace config {
 
   // PADDLE PINS
-  constexpr uint8_t MOTOR_ENABLE_PIN = 1;
-  constexpr uint8_t MOTOR_DIRECTION_PIN = 1;
-  constexpr uint8_t MOTOR_PWM_PIN = 1;
-  constexpr uint8_t LIMIT_SWITCH_A = 1;
-  constexpr uint8_t LIMIT_SWITCH_B = 1;
-  constexpr uint8_t LIMIT_SWITCH_C = 1;
-  constexpr uint8_t LIMIT_SWITCH_D = 1;
+  constexpr uint8_t MOTOR_ENABLE_PIN =      1;
+  constexpr uint8_t MOTOR_DIRECTION_PIN =   1;
+  constexpr uint8_t MOTOR_PWM_PIN =         1;
+  constexpr uint8_t LIMIT_SWITCH_A =        1;
+  constexpr uint8_t LIMIT_SWITCH_B =        1;
+  constexpr uint8_t LIMIT_SWITCH_C =        1;
+  constexpr uint8_t LIMIT_SWITCH_D =        1;
 
 
   // ELECTRICITY METER PINS
@@ -38,13 +38,13 @@ namespace config {
   * is used to calculate how many waves will be created given
   * the input period.
   */
-  constexpr int BASE_RUN_TIME = 30000;
+  constexpr int BASE_RUN_TIME =   30000;
 
   // // INPUT CLAMPS
-  constexpr int HIGH_HEIGHT = 12;
-  constexpr int LOW_HEIGHT = 0;
-  constexpr int HIGH_PERIOD = 16;
-  constexpr int LOW_PERIOD = 3;
+  constexpr int HIGH_HEIGHT =     12;
+  constexpr int LOW_HEIGHT =      0;
+  constexpr int HIGH_PERIOD =     16;
+  constexpr int LOW_PERIOD =      3;
 
 
   // ERROR CHANNELS
