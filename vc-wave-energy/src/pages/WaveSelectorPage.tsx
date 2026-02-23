@@ -1,62 +1,15 @@
 import { Link } from "react-router-dom";
-import Button from "../../components/Button";
-import bgImage from "../../assets/background-ocean.jpg";
-import ValueRow from "../../components/ValueRow";
-import { useAppContext } from "../../AppContext";
-import RiveHeightSlider from "../../components/RiveSlider";
-
-// TODOTODO ===================================================================
-type heightSelection = {
-  height: number;
-};
-type periodSelection = {
-  period: number;
-};
-type selected = {
-  height: number;
-  period: number;
-};
-const heightOptions: [heightSelection] =
-  await window.ipcRenderer.invoke("get-height-options");
-const periodOptions: [periodSelection] =
-  await window.ipcRenderer.invoke("get-period-options");
-let waveProperties: selected | null;
-// TODOTODO ===================================================================
+import Button from "../components/Button";
+import bgImage from "../assets/background-ocean.jpg";
+import ValueRow from "../components/ValueRow";
+import RiveHeightSlider from "../components/RiveSlider";
+import { useAppContext } from "../AppContext";
+import useWaveSelector from "../page-logic/waveSelectorLogic";
 
 function WaveSelectorPage() {
-  // CONTEXT
-  const {
-    setSelectedHeight,
-    setSelectedPeriod,
-    activeHeightIndex,
-    setActiveHeightIndex,
-    activePeriodIndex,
-    setActivePeriodIndex,
-  } = useAppContext();
-
-  const onClick = () => {
-    console.log(
-      `Sending wave of size 
-      ${selectedHeight?.height}m and period of ${selectedPeriod?.period}s`,
-    );
-    if (selectedHeight && selectedPeriod) {
-      setSelectedHeight(selectedHeight.height);
-      setSelectedPeriod(selectedPeriod.period);
-      waveProperties = {
-        height: selectedHeight.height,
-        period: selectedPeriod.period,
-      };
-      window.ipcRenderer.invoke("send-wave", waveProperties);
-    }
-  };
-  const onGoNotReady = () => {
-    alert("Please ensure 'Height' and 'Period' above have values.");
-  };
-
-  const selectedHeight =
-    activeHeightIndex > 0 ? heightOptions[activeHeightIndex - 1] : undefined;
-  const selectedPeriod =
-    activePeriodIndex > 0 ? periodOptions[activePeriodIndex - 1] : undefined;
+  const { setActiveHeightIndex, setActivePeriodIndex } = useAppContext();
+  const { selectedHeight, selectedPeriod, onClickSendWave, onGoNotReady } =
+    useWaveSelector();
 
   return (
     // Top container
@@ -119,7 +72,7 @@ function WaveSelectorPage() {
           {selectedHeight !== undefined && selectedPeriod !== undefined && (
             <Link to="/wave-read-page">
               <Button
-                onClick={onClick}
+                onClick={onClickSendWave}
                 text="GO"
                 styles="bg-[#95d5b2]/90 border-4 border-[#52b788] px-24 py-8 text-4xl rounded-full font-bold tracking-widest active:bg-[#52b788]/70 active:scale-95 active:border-4 active:border-[#52b788]"
               />

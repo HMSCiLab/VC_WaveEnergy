@@ -1,4 +1,4 @@
-import StartPage from "./features/start/StartPage";
+import StartPage from "./pages/StartPage";
 
 function App() {
   return <StartPage />;

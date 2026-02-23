@@ -5,12 +5,12 @@ import {
   Layout,
   useStateMachineInput,
 } from "@rive-app/react-canvas";
-import bgImage from "../../assets/background-ocean.jpg";
+import bgImage from "../assets/background-ocean.jpg";
 import { useEffect, useState, useRef } from "react";
 import { IpcRendererEvent } from "electron";
-import { useAppContext } from "../../AppContext";
+import { useAppContext } from "../AppContext";
 import { mean } from "simple-statistics";
-import LoadingCircle from "../../components/LoadingCircle";
+import LoadingCircle from "../components/LoadingCircle";
 import { Link } from "react-router-dom";
 
 function WaveReadPage() {

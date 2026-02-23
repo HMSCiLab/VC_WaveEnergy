@@ -1,4 +1,4 @@
-import Button from "../../components/Button";
+import Button from "../components/Button";
 import { Link } from "react-router-dom";
 import bgVideo from "../assets/wave.mp4";
 import { useEffect, useState } from "react";

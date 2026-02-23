@@ -3,8 +3,8 @@ import ReactDOM from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import WaveSelectorPage from "./features/custom-wave/WaveSelectorPage.tsx";
-import WaveReadPage from "./features/report-data/WaveReadPage.tsx";
+import WaveSelectorPage from "./pages/WaveSelectorPage.tsx";
+import WaveReadPage from "./pages/WaveReadPage.tsx";
 import ContextProvider from "./AppContext.tsx";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
