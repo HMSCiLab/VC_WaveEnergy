@@ -1,8 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { useAppContext } from "../AppContext";
 import { heightSelection, periodSelection, selected } from "../types/waveTypes";
+import { useNavigate } from "react-router-dom";
 
 const useWaveSelector = () => {
+    const nav = useNavigate();
+
     // Global context
     const {
         setSelectedHeight,
@@ -30,13 +33,14 @@ const useWaveSelector = () => {
         getHeightOptions();
         getPeriodOptions();
     }, [])
-    let waveProperties: selected | null;
-
+    
     // Send wave over IPC to electron process.
     const onClickSendWave = () => {
+        let waveProperties: selected | null;
+
         console.log(
         `Sending wave of size 
-        ${selectedHeight?.height}m and period of ${selectedPeriod?.period}s`,
+        ${selectedHeight?.height}ft and period of ${selectedPeriod?.period}s`,
         );
         if (selectedHeight && selectedPeriod) {
         setSelectedHeight(selectedHeight.height);
@@ -47,6 +51,7 @@ const useWaveSelector = () => {
         };
         window.ipcRenderer.invoke("send-wave", waveProperties);
         }
+        nav("/wave-read-page");
     };
 
     // Make sure that app cannot send blank properties.
@@ -64,11 +69,17 @@ const useWaveSelector = () => {
         [activePeriodIndex, periodOptions]
     );
 
+    // Watchdog
+    const readyToFire = selectedHeight && selectedPeriod;
+
     return {
         selectedHeight,
         selectedPeriod,
         onClickSendWave,
-        onGoNotReady
+        onGoNotReady,
+        readyToFire,
+        heightOptions,
+        periodOptions
     };
 }
 

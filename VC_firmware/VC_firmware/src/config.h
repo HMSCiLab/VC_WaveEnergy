@@ -10,7 +10,6 @@ namespace config {
   constexpr uint8_t LIMIT_SWITCH_A =        1;
   constexpr uint8_t LIMIT_SWITCH_B =        1;
   constexpr uint8_t LIMIT_SWITCH_C =        1;
-  constexpr uint8_t LIMIT_SWITCH_D =        1;
 
 
   // ELECTRICITY METER PINS

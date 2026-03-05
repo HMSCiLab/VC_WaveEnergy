@@ -34,8 +34,8 @@ void send_message(String channel, String mssg, float data) {
 * be created are expected in JSON.
 * 
 * {
-*   "userHeight" : "3",
-*   "userPeriod" : "12"
+*   "height" : "3",
+*   "period" : "12"
 *  }
 *
 */

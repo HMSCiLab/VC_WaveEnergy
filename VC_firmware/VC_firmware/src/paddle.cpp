@@ -5,6 +5,7 @@
 #include "paddle.h"
 
 
+// TODO: CHECK THESE AGAINST THE 0-255 VALID PWM VALUES
 int convert_user_height(int user_height) {
   return (int)user_height * config::BASE_HEIGHT_SPEED;
 }
