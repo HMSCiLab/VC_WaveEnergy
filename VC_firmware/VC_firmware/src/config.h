@@ -39,14 +39,6 @@ namespace config {
   */
   constexpr int BASE_RUN_TIME =   30000;
 
-  // // INPUT CLAMPS
-  constexpr int HIGH_HEIGHT =     12;
-  constexpr int LOW_HEIGHT =      1;
-  constexpr int HIGH_PERIOD =     16;
-  constexpr int LOW_PERIOD =      3;
-
-
   // ERROR CHANNELS
   constexpr const char* FAILED_TO_RUN_ERROR = "ERROR-FTR";
-  constexpr const char* INVALID_INPUT_ERROR = "ERROR-II";
 }

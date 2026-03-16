@@ -49,24 +49,5 @@ int validator(int &user_height, int &user_period, String &input) {
 
   user_height = json_req["height"];
   user_period = json_req["period"];
-  send_message("DEBUG", "user_height", user_height);
-
-  if (std::isnan(user_height) || isnan(user_period)) {
-    send_message(config::INVALID_INPUT_ERROR, "Invalid user input", NAN);
-  }
-
-  int height_check = check_height(user_height);
-  int period_check = check_period(user_period);
-
-  int total_check = height_check && period_check;
-  if (!total_check) send_message(config::INVALID_INPUT_ERROR, "Invalid user input", NAN);
-  return total_check;
-}
-
-int check_height(int &num){
-  return num > config::LOW_HEIGHT && num < config::HIGH_HEIGHT;
-}
-
-int check_period(int &num){
-  return num > config::LOW_PERIOD && num < config::HIGH_PERIOD;
+  return 1;
 }
