@@ -2,6 +2,7 @@ import { app, BrowserWindow, ipcMain } from 'electron'
 import path from 'node:path'
 import { cleanup, initArduino, registerArduinoHandlers } from './arduinoInterface'
 import { CheckPacWavePipe, initPacWavePipe, registerPyPipeHandlers } from './pythonInterface'
+import { registerPacWaveHandlers } from './pacwaveInterface'
 import { APP_ROOT, ELECTRON_DIST } from './paths'
 import { HEIGHT_SELECTION_OPTIONS, PERIOD_SELECTION_OPTIONS } from './config'
 
@@ -66,6 +67,7 @@ app.whenReady().then(() => {
   initPacWavePipe();
   CheckPacWavePipe();
   registerPyPipeHandlers();
+  registerPacWaveHandlers();
 
   ipcMain.handle('get-height-options', async () => {
     return HEIGHT_SELECTION_OPTIONS;

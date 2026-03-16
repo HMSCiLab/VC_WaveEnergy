@@ -37,7 +37,7 @@ async def get_cdip_data() -> Any:
     if type(resp) == tuple:
         ds, station = resp
         # UTC
-        waveTime = pd.Timestamp(ds['waveTime'].values[0])
+        waveTime = pd.Timestamp(ds['waveTime'].values[0], tz="UTC")
         # Meters -> Feet
         waveHs = ds['waveHs'].values[0] * 3.28084
         # Seconds
@@ -47,11 +47,11 @@ async def get_cdip_data() -> Any:
         
         try: 
             data = WaveProperties(
-                waveTime=waveTime,
-                waveHeight=waveHs,
-                wavePeriod=waveTa,
-                waveLat=waveLat,
-                waveLong=waveLong,
+                timestamp=waveTime,
+                significant_wave_height=waveHs,
+                mean_period=waveTa,
+                latitude=waveLat,
+                longitude=waveLong,
                 stationID=int(station)
             )
 

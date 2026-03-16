@@ -2,8 +2,15 @@ import Button from "../components/Button";
 import { Link } from "react-router-dom";
 import bgVideo from "../assets/wave.mp4";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAppContext } from "../AppContext";
+import { buoyData } from "../../electron/types/buoyDataType";
+import { PacWaveDataError } from "../../electron/errors/errors";
+import { inputValidation } from "../page-logic/utils";
 
 function StartPage() {
+  const navigate = useNavigate();
+  const { setSelectedHeight, setSelectedPeriod } = useAppContext();
   const [arduinoConnected, setArduinoConnected] = useState<boolean>(false);
 
   useEffect(() => {
@@ -24,13 +31,52 @@ function StartPage() {
     });
   }, []);
 
+  useEffect(() => {
+    window.ipcRenderer.on("ERROR-II", (error) => {
+      console.log(error);
+    });
+  }, []);
+
   const onClick = (whichButton: String) => {
     console.log(whichButton);
   };
 
+  const sendWaveOverIPC = async (data: buoyData) => {
+    setSelectedHeight(data.height);
+    setSelectedPeriod(data.period);
+    const waveProperties = {
+      height: data.height,
+      period: data.period,
+    };
+    if (inputValidation(waveProperties)) {
+      window.ipcRenderer.invoke("send-wave", waveProperties).then(() => {
+        console.log(
+          `Sending ${waveProperties.height}ft @ ${waveProperties.period}s`,
+        );
+        navigate("/wave-read-page");
+      });
+    }
+  };
+
+  /**
+   * Get CDIP data via the offical API.
+   */
   const getCdipData = async () => {
-    const data = await window.ipcRenderer.invoke("get-wave-data");
-    console.log(data);
+    console.log("Getting CDIP data");
+    return await window.ipcRenderer.invoke("get-wave-data");
+  };
+
+  /**
+   * Get CDIP data via NFS mount at PacWave's CEOAS based server netwrok.
+   */
+  const getDriveData = async () => {
+    try {
+      const data: buoyData = await window.ipcRenderer.invoke("get-drive-data");
+      sendWaveOverIPC(data);
+    } catch (PacWaveDataError) {
+      const data: buoyData = await getCdipData();
+      sendWaveOverIPC(data);
+    }
   };
 
   const buttonStyles: string =
@@ -63,7 +109,8 @@ function StartPage() {
 
             <Button
               text={"See real-time\nwaves"}
-              onClick={getCdipData}
+              // onClick={getCdipData}
+              onClick={getDriveData}
               styles={buttonStyles}
             />
           </>

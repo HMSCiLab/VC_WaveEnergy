@@ -21,7 +21,8 @@ contextBridge.exposeInMainWorld('ipcRenderer', {
 })
 
 const PACWAVE_API = {
-  requestWaveData: () => {ipcRenderer.invoke("get-wave-data")}
+  requestWaveData: () => {ipcRenderer.invoke("get-wave-data")},
+  requestSharedWaveData: () => {ipcRenderer.invoke("get-drive-data")}
 }
 
 const ARDUINO_API = {
@@ -39,8 +40,11 @@ const ARDUINO_API = {
   selectionOptions: () => {
     ipcRenderer.invoke('get-height-options',  event);
     ipcRenderer.invoke('get-period-options', event);
-  }
+  },
+  onIIError: () => {
+    ipcRenderer.send("ERROR-II");
+  },
 }
 
 contextBridge.exposeInMainWorld('arduinoAPI', ARDUINO_API);
-contextBridge.exposeInMainWorld('pacwaveAPI', PACWAVE_API)
+contextBridge.exposeInMainWorld('pacwaveAPI', PACWAVE_API);

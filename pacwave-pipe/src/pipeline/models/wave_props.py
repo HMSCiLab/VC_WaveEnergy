@@ -3,9 +3,9 @@ from datetime import datetime
 
 
 class WaveProperties(BaseModel):
-    waveTime: datetime
-    waveHeight: float
-    wavePeriod: float
+    timestamp: datetime
+    significant_wave_height: float
+    mean_period: float
     stationID: int
-    waveLat: float
-    waveLong: float
+    latitude: float
+    longitude: float
