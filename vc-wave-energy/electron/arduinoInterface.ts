@@ -96,16 +96,6 @@ async function tryArduinoConnection(){
         waveData.push(resp.data);
         send("wave-val", resp.data);
         break;
-      case "ERROR-II":
-        console.log("ERROR FROM ARDUINO.");
-        console.log(`Message: ${resp.mssg}`);
-        const error = new InvalidUserInputError("Invalid user input", 400);
-        send("ERROR-II", {
-          name: error.name,
-          message: error.message,
-          code: error.statusCode
-        });
-        break;
     }
     } 
   );

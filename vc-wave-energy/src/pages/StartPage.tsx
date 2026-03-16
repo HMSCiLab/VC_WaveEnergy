@@ -31,12 +31,6 @@ function StartPage() {
     });
   }, []);
 
-  useEffect(() => {
-    window.ipcRenderer.on("ERROR-II", (error) => {
-      console.log(error);
-    });
-  }, []);
-
   const onClick = (whichButton: String) => {
     console.log(whichButton);
   };

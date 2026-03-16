@@ -40,10 +40,7 @@ const ARDUINO_API = {
   selectionOptions: () => {
     ipcRenderer.invoke('get-height-options',  event);
     ipcRenderer.invoke('get-period-options', event);
-  },
-  onIIError: () => {
-    ipcRenderer.send("ERROR-II");
-  },
+  }
 }
 
 contextBridge.exposeInMainWorld('arduinoAPI', ARDUINO_API);

@@ -37,12 +37,6 @@ const useWaveSelector = () => {
         getPeriodOptions();
     }, [])
 
-    useEffect(() => {
-        window.ipcRenderer.on("ERROR-II", () => {
-            setValidInput(false);
-        })
-    }, [])
-    
     // Send wave over IPC to electron process.
     const onClickSendWave = () => {
         let waveProperties: selected | null;

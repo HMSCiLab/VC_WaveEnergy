@@ -1143,24 +1143,6 @@ const JSON5 = {
   stringify: stringify$1
 };
 var lib = JSON5;
-class PacWaveDataError extends Error {
-  constructor(message, statusCode = 404) {
-    super(message);
-    __publicField(this, "statusCode");
-    this.name = "PacWaveDataError";
-    this.statusCode = statusCode;
-    Object.setPrototypeOf(this, PacWaveDataError.prototype);
-  }
-}
-class InvalidUserInputError extends Error {
-  constructor(message, statusCode = 404) {
-    super(message);
-    __publicField(this, "statusCode");
-    this.name = "InvalidUserInputError";
-    this.statusCode = statusCode;
-    Object.setPrototypeOf(this, InvalidUserInputError.prototype);
-  }
-}
 const require$2 = createRequire(import.meta.url);
 const { SerialPort } = require$2("serialport");
 const { ReadlineParser } = require$2("@serialport/parser-readline");
@@ -1225,16 +1207,6 @@ Data: ${resp.data}`);
         case "WAVEDATA":
           waveData.push(resp.data);
           send("wave-val", resp.data);
-          break;
-        case "ERROR-II":
-          console.log("ERROR FROM ARDUINO.");
-          console.log(`Message: ${resp.mssg}`);
-          const error = new InvalidUserInputError("Invalid user input", 400);
-          send("ERROR-II", {
-            name: error.name,
-            message: error.message,
-            code: error.statusCode
-          });
           break;
       }
     }
@@ -20640,6 +20612,15 @@ async function getCdipData() {
 }
 function registerPyPipeHandlers() {
   ipcMain.handle("get-wave-data", getCdipData);
+}
+class PacWaveDataError extends Error {
+  constructor(message, statusCode = 404) {
+    super(message);
+    __publicField(this, "statusCode");
+    this.name = "PacWaveDataError";
+    this.statusCode = statusCode;
+    Object.setPrototypeOf(this, PacWaveDataError.prototype);
+  }
 }
 const require$1 = createRequire(import.meta.url);
 const getDriveData = async () => {
