@@ -21,6 +21,9 @@ electron.contextBridge.exposeInMainWorld("ipcRenderer", {
 const PACWAVE_API = {
   requestWaveData: () => {
     electron.ipcRenderer.invoke("get-wave-data");
+  },
+  requestSharedWaveData: () => {
+    electron.ipcRenderer.invoke("get-drive-data");
   }
 };
 const ARDUINO_API = {
@@ -37,6 +40,9 @@ const ARDUINO_API = {
   selectionOptions: () => {
     electron.ipcRenderer.invoke("get-height-options", event);
     electron.ipcRenderer.invoke("get-period-options", event);
+  },
+  onIIError: () => {
+    electron.ipcRenderer.send("ERROR-II");
   }
 };
 electron.contextBridge.exposeInMainWorld("arduinoAPI", ARDUINO_API);

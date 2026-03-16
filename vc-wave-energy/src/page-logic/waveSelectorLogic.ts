@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useAppContext } from "../AppContext";
 import { heightSelection, periodSelection, selected } from "../types/waveTypes";
 import { useNavigate } from "react-router-dom";
+import { inputValidation } from "./utils";
 
 const useWaveSelector = () => {
     const nav = useNavigate();
@@ -12,6 +13,8 @@ const useWaveSelector = () => {
         setSelectedPeriod,
         activeHeightIndex,
         activePeriodIndex,
+        validInput,
+        setValidInput
     } = useAppContext();
 
     // Hook specific context
@@ -33,30 +36,38 @@ const useWaveSelector = () => {
         getHeightOptions();
         getPeriodOptions();
     }, [])
+
+    useEffect(() => {
+        window.ipcRenderer.on("ERROR-II", () => {
+            setValidInput(false);
+        })
+    }, [])
     
     // Send wave over IPC to electron process.
     const onClickSendWave = () => {
         let waveProperties: selected | null;
 
         console.log(
-        `Sending wave of size 
-        ${selectedHeight?.height}ft and period of ${selectedPeriod?.period}s`,
+            `Attempting to send wave of size 
+            ${selectedHeight?.height}ft and period of ${selectedPeriod?.period}s`,
         );
         if (selectedHeight && selectedPeriod) {
-        setSelectedHeight(selectedHeight.height);
-        setSelectedPeriod(selectedPeriod.period);
-        waveProperties = {
-            height: selectedHeight.height,
-            period: selectedPeriod.period,
-        };
-        window.ipcRenderer.invoke("send-wave", waveProperties);
+            setSelectedHeight(selectedHeight.height);
+            setSelectedPeriod(selectedPeriod.period);
+            waveProperties = {
+                height: selectedHeight.height,
+                period: selectedPeriod.period,
+            };
+            if (inputValidation(waveProperties)) {
+                window.ipcRenderer.invoke("send-wave", waveProperties);
+                nav("/wave-read-page");
+            } 
         }
-        nav("/wave-read-page");
     };
 
     // Make sure that app cannot send blank properties.
     const onGoNotReady = () => {
-        alert("Please ensure 'Height' and 'Period' above have values.");
+        console.log("Please ensure 'Height' and 'Period' above have values.");
     };
 
     // Update the user specified slider values.

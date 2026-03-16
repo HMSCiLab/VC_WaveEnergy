@@ -4,12 +4,8 @@ import { useAppContext } from "../AppContext";
 import useWaveSelector from "../page-logic/waveSelectorLogic";
 
 function WaveSelectorPage() {
-  const { setActiveHeightIndex, setActivePeriodIndex } = useAppContext();
-  const {
-    onClickSendWave,
-    onGoNotReady,
-    readyToFire,
-  } = useWaveSelector();
+  const { setActiveHeightIndex, setActivePeriodIndex, validInput } = useAppContext();
+  const { onClickSendWave, onGoNotReady, readyToFire } = useWaveSelector();
 
   return (
     // Top container
@@ -32,8 +28,6 @@ function WaveSelectorPage() {
 
       {/* Main content container */}
       <div className="flex flex-col flex-1">
-
-
         {/* Slider */}
         <div className="flex flex-1 gap-10">
           <div className="p-12 flex flex-1 items-center justify-center">
@@ -58,10 +52,9 @@ function WaveSelectorPage() {
             className="bg-[#95d5b2]/90 border-4 border-[#52b788] px-24 py-8 text-4xl rounded-full font-bold tracking-widest active:bg-[#52b788]/70 active:scale-95 active:border-4 active:border-[#52b788]"
             disabled={!readyToFire}
           >
-            Go
+            {readyToFire ? "Go" : "Select a wave"}
           </button>
         </div>
-
       </div>
     </div>
   );

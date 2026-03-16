@@ -13,6 +13,9 @@ type AppContextType = {
   setActiveHeightIndex: React.Dispatch<React.SetStateAction<number>>;
   activePeriodIndex: number;
   setActivePeriodIndex: React.Dispatch<React.SetStateAction<number>>;
+
+  validInput: boolean;
+  setValidInput: React.Dispatch<React.SetStateAction<boolean>>;
 };
 const AppContext = createContext<AppContextType | null>(null);
 
@@ -26,6 +29,7 @@ export default function ContextProvider({
   const [selectedPeriod, setSelectedPeriod] = useState<number>(0);
   const [activeHeightIndex, setActiveHeightIndex] = useState(0);
   const [activePeriodIndex, setActivePeriodIndex] = useState(0);
+  const [validInput, setValidInput] = useState(false);
   return (
     <AppContext.Provider
       value={{
@@ -38,7 +42,9 @@ export default function ContextProvider({
         activeHeightIndex,
         setActiveHeightIndex,
         activePeriodIndex,
-        setActivePeriodIndex
+        setActivePeriodIndex,
+        validInput,
+        setValidInput,
       }}
     >
       {children}

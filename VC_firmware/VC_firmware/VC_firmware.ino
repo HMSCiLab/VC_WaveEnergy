@@ -27,8 +27,8 @@ void loop() {
   int user_period;
   int check = listener(user_height, user_period);
   if (check) {
-    // print_ten();    // Demonstration
-    generate_wave(user_height, user_period);   // Real life
+    print_ten();    // Demonstration
+    // generate_wave(user_height, user_period);   // Real life
   }
 }
 

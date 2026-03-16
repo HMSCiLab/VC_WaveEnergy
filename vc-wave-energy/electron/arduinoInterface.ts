@@ -7,6 +7,7 @@ import {
   BAUD_RATE,
 } from "./config";
 import JSON5 from 'json5'
+import { InvalidUserInputError } from "./errors/errors";
 
 const require = createRequire(import.meta.url);
 const { SerialPort } = require('serialport');
@@ -98,9 +99,15 @@ async function tryArduinoConnection(){
       case "ERROR-II":
         console.log("ERROR FROM ARDUINO.");
         console.log(`Message: ${resp.mssg}`);
-        send("ERROR-II");
+        const error = new InvalidUserInputError("Invalid user input", 400);
+        send("ERROR-II", {
+          name: error.name,
+          message: error.message,
+          code: error.statusCode
+        });
         break;
-    }}
+    }
+    } 
   );
 }
 

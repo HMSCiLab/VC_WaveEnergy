@@ -41,7 +41,7 @@ namespace config {
 
   // // INPUT CLAMPS
   constexpr int HIGH_HEIGHT =     12;
-  constexpr int LOW_HEIGHT =      0;
+  constexpr int LOW_HEIGHT =      1;
   constexpr int HIGH_PERIOD =     16;
   constexpr int LOW_PERIOD =      3;
 

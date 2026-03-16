@@ -2,6 +2,8 @@ import { request, setGlobalDispatcher, Agent } from 'undici';
 import { restartPyPipe } from './pythonProcControl';
 import { SOCK_PATH, PIPE_MAX_TRIES, TRY_INTERVAL } from './config';
 import { ipcMain } from 'electron';
+import { z } from 'zod';
+import { buoyDataZ } from './types/buoyDataType';
 
 let failures = 0;
 let getting_data: boolean = false;
@@ -56,7 +58,10 @@ async function getCdipData() {
             throw new Error(`Bad status: ${statusCode}`);
         }
         // Success, fulfill promise
-        const data = await body.json(); 
+        const json = await body.json();
+        console.log(json);
+        type BuoyData = z.infer<typeof buoyDataZ>;
+        const data: BuoyData = buoyDataZ.parse(json);
         getting_data = false;
         return data
     } 

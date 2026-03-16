@@ -161,13 +161,6 @@ function WaveReadPage() {
     }
   }, [showInfo]);
 
-  useEffect(() => {
-    const onErrorII = () => {
-      window.location.href = "/";
-    };
-    window.ipcRenderer.on("ERROR-II", onErrorII);
-  }, []);
-
   return (
     // Main Container
     <div
