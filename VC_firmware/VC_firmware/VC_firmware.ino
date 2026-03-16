@@ -13,8 +13,8 @@ void setup() {
   pinMode(config::MOTOR_DIRECTION_PIN, OUTPUT);
   pinMode(config::MOTOR_ENABLE_PIN, OUTPUT);
   digitalWrite(config::MOTOR_ENABLE_PIN, LOW);
-  pinMode(config::MOTOR_PWM_PIN, OUTPUT);
-  analogWrite(config::MOTOR_PWM_PIN, 0);
+  pinMode(config::MOTOR_STEP_PIN, OUTPUT);
+  analogWrite(config::MOTOR_STEP_PIN, 0);
 
   // LIMIT SWITCHES
   pinMode(config::LIMIT_SWITCH_A, INPUT);

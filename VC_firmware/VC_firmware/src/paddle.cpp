@@ -1,17 +1,22 @@
-#include "wiring_analog.h"
-#include "wiring_constants.h"
-#include "wiring_digital.h"
+#include "Tone.h"
+#include <Arduino.h>
 #include "config.h"
 #include "paddle.h"
 
 
-// TODO: CHECK THESE AGAINST THE 0-255 VALID PWM VALUES
+/**
+* Convert the given user height in feet to the number of 
+* motor step pulses required to create a scaled version of
+* this wave.
+*
+* User height (ft) is converted to inches. It's then scaled
+* based on a configurable speed constant that should produce
+* a decided upon consistent wave height. The returned value
+* is converted to HZ per inch (Pulses per Revolution / Inches per Revolution)
+*/
 int convert_user_height(int user_height) {
-  return (int)user_height * config::BASE_HEIGHT_SPEED;
-}
-
-int convert_user_period(int user_period) {
-  return (int)user_period * config::BASE_RETURN_SPEED;
+  float height_inches = user_height * 12;
+  return ((int)height_inches * config::BASE_HEIGHT_SPEED) * config::HZ_PER_INCH;
 }
 
 /*
@@ -21,32 +26,32 @@ int convert_user_period(int user_period) {
 * the user defined period.
 */
 void generate_wave(int user_height, int user_period) {
-  // convert height and period to PWM and distance traveled
-  int height_pwm = convert_user_height(user_height);
-  int period_pwm = convert_user_period(user_period);
+  // Convert height and period to PWM and distance traveled
+  int height_hz = (int)convert_user_height(user_height);
 
   // Run time divided by input period in ms.
   int num_waves = (int)config::BASE_RUN_TIME / (user_period * 1000);
 
   // Generate n waves
-  for (int n=0; n <= num_waves; n++){
+  for (int n=0; n < num_waves; n++){
     // Paddle at the start position (A)
-    // set PWM speed so adequate height generated
-    analogWrite(config::MOTOR_PWM_PIN, height_pwm);
-
     // Direction forward & motor on
     digitalWrite(config::MOTOR_DIRECTION_PIN, HIGH);
     digitalWrite(config::MOTOR_ENABLE_PIN, HIGH);
+    tone(config::MOTOR_STEP_PIN, height_hz);
 
-    // Run to middle of tank and reset motor
+    // Run to end position (C) and reverse direction
     while(digitalRead(config::LIMIT_SWITCH_C) != 1);
+    noTone(config::MOTOR_STEP_PIN);
     digitalWrite(config::MOTOR_ENABLE_PIN, LOW);
     digitalWrite(config::MOTOR_DIRECTION_PIN, LOW);
 
     // Return to start at return speed
-    analogWrite(config::MOTOR_PWM_PIN, period_pwm);    
     digitalWrite(config::MOTOR_ENABLE_PIN, HIGH);
+    tone(config::MOTOR_STEP_PIN, config::BASE_RETURN_SPEED);
     while(digitalRead(config::LIMIT_SWITCH_A) != 1);
+
+    noTone(config::MOTOR_STEP_PIN);
     digitalWrite(config::MOTOR_ENABLE_PIN, LOW);
   }
 }
