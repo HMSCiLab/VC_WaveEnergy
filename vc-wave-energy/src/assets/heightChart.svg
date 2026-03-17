@@ -1,0 +1,8 @@
+<svg width="480" height="171" viewBox="0 0 480 171" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M0.403442 94.6C86.721 -23.2655 169.206 -25.1313 250.772 94.6" stroke="white"/>
+<path d="M250.771 94.6C329.595 195.004 404.919 196.593 479.403 94.6" stroke="white"/>
+<line x1="365.903" y1="160.506" x2="365.903" y2="1.49377" stroke="white"/>
+<line x1="355.403" y1="160" x2="376.403" y2="160" stroke="white"/>
+<line x1="355.403" y1="1" x2="376.403" y2="1" stroke="white"/>
+<line x1="350.432" y1="0.5" x2="132.375" y2="0.5" stroke="white" stroke-dasharray="11 22"/>
+</svg>

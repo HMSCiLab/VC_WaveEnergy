@@ -75,7 +75,7 @@ function WaveSelectorPage() {
               <span className="absolute">Cancel</span>
             </Link>
             <Link
-              to="/"
+              to="/learn-page"
               className="flex items-center justify-center 
                         font-bold tracking-widest text-2xl
                         bg-white/50 border-4 border-white/30 rounded-full 
