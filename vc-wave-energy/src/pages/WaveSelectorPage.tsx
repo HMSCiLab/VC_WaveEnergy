@@ -2,9 +2,11 @@ import bgImage from "../assets/background-ocean.jpg";
 import RiveSlider from "../components/RiveSlider";
 import { useAppContext } from "../AppContext";
 import useWaveSelector from "../page-logic/waveSelectorLogic";
+import { Link } from "react-router-dom";
 
 function WaveSelectorPage() {
-  const { setActiveHeightIndex, setActivePeriodIndex, validInput } = useAppContext();
+  const { setActiveHeightIndex, setActivePeriodIndex, validInput } =
+    useAppContext();
   const { onClickSendWave, onGoNotReady, readyToFire } = useWaveSelector();
 
   return (
@@ -45,15 +47,35 @@ function WaveSelectorPage() {
           </div>
         </div>
 
-        {/* Button */}
-        <div className="flex justify-center items-center py-12">
+        {/* Go Button */}
+        <div className="flex justify-center items-center gap-10">
           <button
             onClick={readyToFire ? onClickSendWave : onGoNotReady}
-            className="bg-[#95d5b2]/90 border-4 border-[#52b788] px-24 py-8 text-4xl rounded-full font-bold tracking-widest active:bg-[#52b788]/70 active:scale-95 active:border-4 active:border-[#52b788]"
+            className="bg-[#95d5b2]/90 border-4 border-[#52b788]
+            flex items-center justify-center
+            px-16 py-8 text-4xl rounded-full font-bold tracking-widest 
+            active:bg-[#52b788]/70 active:scale-95 active:border-4 active:border-[#52b788]"
             disabled={!readyToFire}
           >
-            {readyToFire ? "Go" : "Select a wave"}
+            {/* First span sets width */}
+            <span className="invisible">Select a wave</span>
+            <span className="absolute">
+              {readyToFire ? "Go" : "Select a wave"}
+            </span>
           </button>
+
+          <div className="flex justify-center items-center py-12">
+            <Link
+              to={"/"}
+              className="bg-[#8f261e]/90 border-4 border-[#731b15]
+                        flex items-center justify-center
+                        px-16 py-8 text-4xl rounded-full font-bold tracking-widest 
+                        active:bg-[#8f261e]/70 active:scale-95 active:border-4 active:border-[#731b15]"
+            >
+              <span className="invisible">Select a wave</span>
+              <span className="absolute">Cancel</span>
+            </Link>
+          </div>
         </div>
       </div>
     </div>
