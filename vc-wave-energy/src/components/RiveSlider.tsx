@@ -23,7 +23,7 @@ function RiveSlider({ rivFile, onSelectionChange }: Props) {
     stateMachines: "SlideMachine",
     autoplay: true,
     layout: new Layout({
-      fit: Fit.Cover, // Change to: rive.Fit.Contain, or Cover
+      fit: Fit.Contain, // Change to: rive.Fit.Contain, or Cover
       alignment: Alignment.Center,
       layoutScaleFactor: 1,
     }),

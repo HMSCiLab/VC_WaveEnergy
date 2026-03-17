@@ -21,9 +21,8 @@ function WaveSelectorPage() {
       }}
     >
       {/* Top description */}
-      <div className="bg-black/35 p-12 flex items-center justify-center w-full">
+      <div className="bg-black/35 flex py-10 items-center justify-center w-full">
         <h1 className="text-left text-white text-4xl tracking-wide">
-          {" "}
           Use the sliders to select the wave's height and period.
         </h1>
       </div>
@@ -32,14 +31,14 @@ function WaveSelectorPage() {
       <div className="flex flex-col flex-1">
         {/* Slider */}
         <div className="flex flex-1 gap-10">
-          <div className="p-12 flex flex-1 items-center justify-center">
+          <div className="flex flex-1 items-center justify-center">
             <RiveSlider
               rivFile="/src/assets/heightslider.riv"
               onSelectionChange={setActiveHeightIndex}
             />
           </div>
 
-          <div className="p-12 flex flex-1 items-center justify-center">
+          <div className="flex flex-1 items-center justify-center">
             <RiveSlider
               rivFile="/src/assets/periodslider.riv"
               onSelectionChange={setActivePeriodIndex}
@@ -48,7 +47,7 @@ function WaveSelectorPage() {
         </div>
 
         {/* Go Button */}
-        <div className="flex justify-center items-center gap-10">
+        <div className="flex flex-row justify-center items-center gap-10">
           <button
             onClick={readyToFire ? onClickSendWave : onGoNotReady}
             className="bg-[#95d5b2]/90 border-4 border-[#52b788]
@@ -64,16 +63,25 @@ function WaveSelectorPage() {
             </span>
           </button>
 
-          <div className="flex justify-center items-center py-12">
+          <div className="flex flex-col justify-center items-center py-12 gap-5">
             <Link
               to={"/"}
               className="bg-[#8f261e]/90 border-4 border-[#731b15]
                         flex items-center justify-center
-                        px-16 py-8 text-4xl rounded-full font-bold tracking-widest 
+                        px-16 py-4 text-2xl rounded-full font-bold tracking-widest 
                         active:bg-[#8f261e]/70 active:scale-95 active:border-4 active:border-[#731b15]"
             >
-              <span className="invisible">Select a wave</span>
+              <span className="invisible">Learn more</span>
               <span className="absolute">Cancel</span>
+            </Link>
+            <Link
+              to="/"
+              className="flex items-center justify-center 
+                        font-bold tracking-widest text-2xl
+                        bg-white/50 border-4 border-white/30 rounded-full 
+                        px-16 py-4"
+            >
+              <span className="flex">Learn more</span>
             </Link>
           </div>
         </div>
