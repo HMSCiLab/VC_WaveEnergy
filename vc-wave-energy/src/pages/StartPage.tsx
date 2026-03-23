@@ -95,18 +95,19 @@ function StartPage() {
           <>
             <Link to="/wave-selector-page">
               <Button
-                text={"Make your own\nwave"}
-                onClick={onClick}
-                styles={buttonStyles}
-              />
+                className={buttonStyles}
+              >
+                Make your own wave
+                </Button>
             </Link>
 
             <Button
-              text={"See real-time\nwaves"}
               // onClick={getCdipData}
               onClick={getDriveData}
-              styles={buttonStyles}
-            />
+              className={buttonStyles}
+            >
+              See real-time Waves
+              </Button>
           </>
         )}
         {!arduinoConnected && (

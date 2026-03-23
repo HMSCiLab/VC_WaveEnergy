@@ -1,14 +1,13 @@
-interface Props {
-  text: string;
-  onClick: (whichButton: string) => void;
-  styles?: string;
-  disabled?: boolean;
-}
+import { ReactNode, ButtonHTMLAttributes } from "react";
 
-function Button({ text, onClick, styles, disabled }: Props) {
+type Props = {
+  children?: ReactNode;
+} & ButtonHTMLAttributes<HTMLButtonElement>
+
+function Button({ children, ...rest }: Props) {
   return (
-    <button onClick={() => onClick(text)} className={styles} disabled={disabled}>
-      {text}
+    <button {...rest}>
+      {children}
     </button>
   
   );
