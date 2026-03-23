@@ -3,8 +3,11 @@ import bgImage from "../assets/background-ocean.jpg";
 import { XMarkIcon } from "@heroicons/react/16/solid";
 import LearnPage1Copy from "../components/LearnPage1Copy";
 import LearnPage2Copy from "../components/LearnPage2Copy";
+import PageChanger from "../components/PageChanger";
+import { useAppContext } from "../AppContext";
 
 function LearnPage() {
+  const { learnPageOne } = useAppContext();
   return (
     <div
       className="h-screen overflow-hidden flex flex-col justify-center items-center"
@@ -23,9 +26,10 @@ function LearnPage() {
           </Link>
         </div>
         <div className="flex flex-1 items-center justify-center">
-          {/* <LearnPage1Copy /> */}
-          <LearnPage2Copy />
+          {learnPageOne ? <LearnPage1Copy /> : <LearnPage2Copy />}
         </div>
+        <div className="flex flex-row ml-auto items-center justify-end"></div>
+        <PageChanger />
       </div>
     </div>
   );
