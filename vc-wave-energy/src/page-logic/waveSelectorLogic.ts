@@ -43,8 +43,8 @@ const useWaveSelector = () => {
 
         console.log(
             `Attempting to send wave of size 
-            ${selectedHeight?.height}ft and period of ${selectedPeriod?.period}s`,
-        );
+            ${selectedHeight?.height}ft and period of ${selectedPeriod?.period}s`);
+        
         if (selectedHeight && selectedPeriod) {
             setSelectedHeight(selectedHeight.height);
             setSelectedPeriod(selectedPeriod.period);
@@ -52,7 +52,7 @@ const useWaveSelector = () => {
                 height: selectedHeight.height,
                 period: selectedPeriod.period,
             };
-            if (inputValidation(waveProperties)) {
+        if (inputValidation(waveProperties)) {
                 window.ipcRenderer.invoke("send-wave", waveProperties);
                 nav("/wave-read-page");
             } 

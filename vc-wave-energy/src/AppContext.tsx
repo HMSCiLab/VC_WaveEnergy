@@ -16,6 +16,9 @@ type AppContextType = {
 
   validInput: boolean;
   setValidInput: React.Dispatch<React.SetStateAction<boolean>>;
+
+  learnPageOne: boolean;
+  setLearnPageOne: React.Dispatch<React.SetStateAction<boolean>>;
 };
 const AppContext = createContext<AppContextType | null>(null);
 
@@ -30,6 +33,7 @@ export default function ContextProvider({
   const [activeHeightIndex, setActiveHeightIndex] = useState(0);
   const [activePeriodIndex, setActivePeriodIndex] = useState(0);
   const [validInput, setValidInput] = useState(false);
+  const [learnPageOne, setLearnPageOne] = useState<boolean>(true);
   return (
     <AppContext.Provider
       value={{
@@ -45,6 +49,8 @@ export default function ContextProvider({
         setActivePeriodIndex,
         validInput,
         setValidInput,
+        learnPageOne,
+        setLearnPageOne,
       }}
     >
       {children}

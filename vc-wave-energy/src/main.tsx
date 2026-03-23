@@ -6,6 +6,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import WaveSelectorPage from "./pages/WaveSelectorPage.tsx";
 import WaveReadPage from "./pages/WaveReadPage.tsx";
 import ContextProvider from "./AppContext.tsx";
+import LearnPage from "./pages/LearnPage.tsx";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
@@ -15,6 +16,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
           <Route path="/" element={<App />} />
           <Route path="/wave-selector-page" element={<WaveSelectorPage />} />
           <Route path="/wave-read-page" element={<WaveReadPage />} />
+          <Route path="/learn-page" element={<LearnPage />} />
         </Routes>
       </BrowserRouter>
     </ContextProvider>
