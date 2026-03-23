@@ -1,5 +1,4 @@
 import Button from "../components/Button";
-import { Link } from "react-router-dom";
 import bgVideo from "../assets/wave.mp4";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -7,11 +6,13 @@ import { useAppContext } from "../AppContext";
 import { buoyData } from "../../electron/types/buoyDataType";
 import { PacWaveDataError } from "../../electron/errors/errors";
 import { inputValidation } from "../page-logic/utils";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 function StartPage() {
   const navigate = useNavigate();
   const { setSelectedHeight, setSelectedPeriod } = useAppContext();
   const [arduinoConnected, setArduinoConnected] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     async function getInitStatus() {
@@ -30,10 +31,6 @@ function StartPage() {
       setArduinoConnected(false);
     });
   }, []);
-
-  const onClick = (whichButton: String) => {
-    console.log(whichButton);
-  };
 
   const sendWaveOverIPC = async (data: buoyData) => {
     setSelectedHeight(data.height);
@@ -57,6 +54,7 @@ function StartPage() {
    */
   const getCdipData = async () => {
     console.log("Getting CDIP data");
+    setLoading(true);
     return await window.ipcRenderer.invoke("get-wave-data");
   };
 
@@ -64,6 +62,7 @@ function StartPage() {
    * Get CDIP data via NFS mount at PacWave's CEOAS based server netwrok.
    */
   const getDriveData = async () => {
+    setLoading(true);
     try {
       const data: buoyData = await window.ipcRenderer.invoke("get-drive-data");
       sendWaveOverIPC(data);
@@ -93,20 +92,29 @@ function StartPage() {
       <div className="flex w-full max-w-6xl flex-col sm:flex-row items-center justify-center gap-6 sm:gap-8 md:gap-12 lg:gap-36 pb-70 sm:pb-12 md:pb-16 lg:pb-70 px-4 z-10">
         {arduinoConnected && (
           <>
-            <Link to="/wave-selector-page">
-              <Button
-                text={"Make your own\nwave"}
-                onClick={onClick}
-                styles={buttonStyles}
-              />
-            </Link>
+            <Button
+              className={buttonStyles}
+              onClick={() => {
+                navigate("/wave-selector-page");
+              }}
+            >
+              Make your own wave
+            </Button>
 
             <Button
-              text={"See real-time\nwaves"}
               // onClick={getCdipData}
               onClick={getDriveData}
-              styles={buttonStyles}
-            />
+              className={buttonStyles}
+            >
+              {loading ? (
+                <div className="flex items-center justify-center">
+                  <span className="invisible">See real-time Waves</span>
+                  <LoadingSpinner />
+                </div>
+              ) : (
+                <span>See real-time Waves</span>
+              )}
+            </Button>
           </>
         )}
         {!arduinoConnected && (
