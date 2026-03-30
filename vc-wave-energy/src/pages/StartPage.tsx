@@ -33,8 +33,8 @@ function StartPage() {
   }, []);
 
   const sendWaveOverIPC = async (data: buoyData) => {
-    setSelectedHeight(data.height);
-    setSelectedPeriod(data.period);
+    setSelectedHeight(Number(data.height.toFixed(1)));
+    setSelectedPeriod(Number(data.period.toFixed(1)));
     const waveProperties = {
       height: data.height,
       period: data.period,
