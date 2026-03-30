@@ -112,7 +112,7 @@ function StartPage() {
                   <LoadingSpinner />
                 </div>
               ) : (
-                <span>See real-time Waves</span>
+                <span>See real-time waves</span>
               )}
             </Button>
           </>
