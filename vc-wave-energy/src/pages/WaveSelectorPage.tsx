@@ -31,14 +31,14 @@ function WaveSelectorPage() {
       <div className="flex flex-col flex-1">
         {/* Slider */}
         <div className="flex flex-1 gap-8 items-center justify-center">
-          <div className="flex flex-1">
+          <div className="flex flex-1 h-full">
             <RiveSlider
               rivFile="/src/assets/heightslider.riv"
               onSelectionChange={setActiveHeightIndex}
             />
           </div>
 
-          <div className="flex flex-1 pe-5">
+          <div className="flex flex-1 h-full pe-6">
             <RiveSlider
               rivFile="/src/assets/periodslider.riv"
               onSelectionChange={setActivePeriodIndex}
