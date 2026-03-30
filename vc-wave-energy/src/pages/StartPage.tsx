@@ -73,7 +73,7 @@ function StartPage() {
   };
 
   const buttonStyles: string =
-    "bg-gradient-to-b from-[#fed9b7]/95 via-[#fed9b7]/85 to-[#fdfcdc]/80 text-gray-700 rounded-full drop-shadow-xl/25 font-bold tracking-wider active:from-[#f07167]/80 active:to-[#fed9b7]/80 active:scale-95 px-6 py-4 sm:px-8 sm:py-5 md:px-10 md:py-6 lg:px-8 lg:py-10 text-lg sm:text-2xl md:text-3xl lg:text-4xl whitespace-pre-line";
+    "bg-gradient-to-b from-[#fed9b7]/95 via-[#fed9b7]/85 to-[#fdfcdc]/80 text-gray-700 text-5xl rounded-full drop-shadow-xl/25 tracking-wider active:from-[#f07167]/80 active:to-[#fed9b7]/80 active:scale-95 px-6 py-8  whitespace-pre-line";
 
   return (
     // Main container
@@ -89,7 +89,7 @@ function StartPage() {
         <source src={bgVideo} type="video/mp4" />
       </video>
       {/* Button container */}
-      <div className="flex w-full max-w-6xl flex-col sm:flex-row items-center justify-center gap-6 sm:gap-8 md:gap-12 lg:gap-36 pb-70 sm:pb-12 md:pb-16 lg:pb-70 px-4 z-10">
+      <div className="flex w-full max-w-6xl flex-col sm:flex-row items-center justify-center gap-10 pb-70 px-4 z-10">
         {arduinoConnected && (
           <>
             <Button
