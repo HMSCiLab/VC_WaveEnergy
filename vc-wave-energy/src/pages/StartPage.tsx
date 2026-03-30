@@ -89,7 +89,7 @@ function StartPage() {
         <source src={bgVideo} type="video/mp4" />
       </video>
       {/* Button container */}
-      <div className="flex w-full max-w-6xl flex-col sm:flex-row items-center justify-center gap-10 pb-70 px-4 z-10">
+      <div className="flex w-full max-w-6xl flex-row items-center justify-center gap-10 pb-70 px-4 z-10">
         {arduinoConnected && (
           <>
             <Button
