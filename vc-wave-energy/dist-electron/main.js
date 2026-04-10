@@ -35,6 +35,7 @@ import require$$1$3 from "node:console";
 import require$$1$4 from "node:dns";
 import require$$5$3 from "string_decoder";
 import { spawn } from "node:child_process";
+import fs$1 from "fs";
 const __filename$1 = fileURLToPath(import.meta.url);
 const __dirname$1 = path.dirname(__filename$1);
 const ELECTRON_DIST = __dirname$1;
@@ -1143,9 +1144,9 @@ const JSON5 = {
   stringify: stringify$1
 };
 var lib = JSON5;
-const require$2 = createRequire(import.meta.url);
-const { SerialPort } = require$2("serialport");
-const { ReadlineParser } = require$2("@serialport/parser-readline");
+const require$1 = createRequire(import.meta.url);
+const { SerialPort } = require$1("serialport");
+const { ReadlineParser } = require$1("@serialport/parser-readline");
 let port = null;
 let waveData = [];
 let parser = null;
@@ -20622,9 +20623,9 @@ class PacWaveDataError extends Error {
     Object.setPrototypeOf(this, PacWaveDataError.prototype);
   }
 }
-const require$1 = createRequire(import.meta.url);
 const getDriveData = async () => {
-  const json = require$1(WAVERIDER_JSON);
+  const raw_json = fs$1.readFileSync(WAVERIDER_JSON, "utf-8");
+  const json = JSON.parse(raw_json);
   console.log(json);
   const data = buoyDataZ.parse(json);
   const DAY_MS = 86400 * 1e3;
