@@ -1,15 +1,15 @@
 import { ipcMain } from "electron";
 import { WAVERIDER_JSON } from "./paths";
-import { createRequire } from 'node:module';
 import { buoyDataZ } from "./types/buoyDataType";
 import {z} from 'zod';
 import { PacWaveDataError } from "./errors/errors";
-
-const require = createRequire(import.meta.url)
+import fs from "fs"
 
 
 const getDriveData = async () => {
-    const json = require(WAVERIDER_JSON);
+    const raw_json = fs.readFileSync(WAVERIDER_JSON, 'utf-8');
+    const json = JSON.parse(raw_json);
+
     console.log(json);
     type BuoyData = z.infer<typeof buoyDataZ>;
     const data: BuoyData = buoyDataZ.parse(json);

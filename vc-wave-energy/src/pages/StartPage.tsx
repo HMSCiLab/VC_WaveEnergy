@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useAppContext } from "../AppContext";
 import { buoyData } from "../../electron/types/buoyDataType";
 import { PacWaveDataError } from "../../electron/errors/errors";
-import { inputValidation } from "../page-logic/utils";
+import { clampInput } from "../page-logic/utils";
 import LoadingSpinner from "../components/LoadingSpinner";
 
 function StartPage() {
@@ -35,18 +35,17 @@ function StartPage() {
   const sendWaveOverIPC = async (data: buoyData) => {
     setSelectedHeight(Number(data.height.toFixed(1)));
     setSelectedPeriod(Number(data.period.toFixed(1)));
-    const waveProperties = {
+    const waveProperties = clampInput({
       height: data.height,
       period: data.period,
-    };
-    if (inputValidation(waveProperties)) {
-      window.ipcRenderer.invoke("send-wave", waveProperties).then(() => {
-        console.log(
-          `Sending ${waveProperties.height}ft @ ${waveProperties.period}s`,
-        );
-        navigate("/wave-read-page");
-      });
-    }
+    });
+
+    window.ipcRenderer.invoke("send-wave", waveProperties).then(() => {
+      console.log(
+        `Sending ${waveProperties.height}ft @ ${waveProperties.period}s`,
+      );
+      navigate("/wave-read-page");
+    });
   };
 
   /**
@@ -66,8 +65,10 @@ function StartPage() {
     try {
       const data: buoyData = await window.ipcRenderer.invoke("get-drive-data");
       sendWaveOverIPC(data);
+      console.log(`Drive height/period ${data.height}/${data.period}`);
     } catch (PacWaveDataError) {
       const data: buoyData = await getCdipData();
+      console.log(`CDIP height/period ${data.height}/${data.period}`);
       sendWaveOverIPC(data);
     }
   };
@@ -102,7 +103,6 @@ function StartPage() {
             </Button>
 
             <Button
-              // onClick={getCdipData}
               onClick={getDriveData}
               className={buttonStyles}
             >

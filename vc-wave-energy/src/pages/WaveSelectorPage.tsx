@@ -5,8 +5,7 @@ import useWaveSelector from "../page-logic/waveSelectorLogic";
 import { Link } from "react-router-dom";
 
 function WaveSelectorPage() {
-  const { setActiveHeightIndex, setActivePeriodIndex, validInput } =
-    useAppContext();
+  const { setActiveHeightIndex, setActivePeriodIndex } = useAppContext();
   const { onClickSendWave, onGoNotReady, readyToFire } = useWaveSelector();
 
   return (

@@ -13,8 +13,6 @@ const useWaveSelector = () => {
         setSelectedPeriod,
         activeHeightIndex,
         activePeriodIndex,
-        validInput,
-        setValidInput
     } = useAppContext();
 
     // Hook specific context
@@ -52,9 +50,9 @@ const useWaveSelector = () => {
                 height: selectedHeight.height,
                 period: selectedPeriod.period,
             };
-        if (inputValidation(waveProperties)) {
-                window.ipcRenderer.invoke("send-wave", waveProperties);
-                nav("/wave-read-page");
+            if (inputValidation(waveProperties)) {
+                    window.ipcRenderer.invoke("send-wave", waveProperties);
+                    nav("/wave-read-page");
             } 
         }
     };

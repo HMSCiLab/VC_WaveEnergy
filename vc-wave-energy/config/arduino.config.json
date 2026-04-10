@@ -7,7 +7,7 @@
     "input_clamps": {
         "high_height": 12,
         "low_height": 1,
-        "high_period": 16,
+        "high_period": 14,
         "low_period": 3
     }
 }
