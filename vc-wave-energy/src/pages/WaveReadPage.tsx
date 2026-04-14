@@ -12,6 +12,7 @@ import { useAppContext } from "../AppContext";
 import { mean } from "simple-statistics";
 import LoadingCircle from "../components/LoadingCircle";
 import { Link } from "react-router-dom";
+import config from "../../config/arduino.config.json"
 
 function WaveReadPage() {
   const { rive: riveMeter, RiveComponent: RiveMeterComponent } = useRive({
@@ -42,7 +43,6 @@ function WaveReadPage() {
   const [energyMean, setEnergyMean] = useState<number>(0);
   const [estEnergy, setEstEnergy] = useState<number>(0);
   const [doodad, setDoodad] = useState<string>("doodad");
-  const readTime: number = 30;
 
   const moveGauge = () => {
     if (!meterEnergy) return;
@@ -83,14 +83,14 @@ function WaveReadPage() {
   async function manageCountdown() {
     document.documentElement.style.setProperty(
       "--circle-dur",
-      `${readTime.toString()}s`,
+      `${config.time_to_read_info.toString()}s`,
     );
     await countdown().then(() => console.log("countdown complete"));
   }
 
   // TODO TODO TODO****************************************************************
   async function countdown(): Promise<void> {
-    for (let i = readTime; i > 1; i--) {
+    for (let i = config.time_to_read_info; i > 1; i--) {
       if (window.location.href !== "http://localhost:5173/wave-read-page") {
         break;
       }
@@ -199,6 +199,9 @@ function WaveReadPage() {
               The wave you chose created an average of {energyMean} Watts. If
               scaled to its true ocean size of {selectedHeight} ft - that wave
               would have generated {estEnergy} Watts, enough to power {doodad}!
+            </p>
+            <p className="text-4xl text-white text-center p-6">
+
             </p>
           </>
         )}
