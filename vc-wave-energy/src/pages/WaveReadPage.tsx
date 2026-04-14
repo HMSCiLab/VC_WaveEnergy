@@ -11,8 +11,8 @@ import { IpcRendererEvent } from "electron";
 import { useAppContext } from "../AppContext";
 import { mean } from "simple-statistics";
 import LoadingCircle from "../components/LoadingCircle";
-import { Link } from "react-router-dom";
 import config from "../../config/arduino.config.json";
+import { useNavigate } from "react-router-dom";
 
 function WaveReadPage() {
   const { rive: riveMeter, RiveComponent: RiveMeterComponent } = useRive({
@@ -44,6 +44,7 @@ function WaveReadPage() {
   const [energyMean, setEnergyMean] = useState<number>(0);
   const [estEnergy, setEstEnergy] = useState<number>(0);
   const [doodad, setDoodad] = useState<string>("doodad");
+  const navigate = useNavigate();
 
   const moveGauge = () => {
     if (!meterEnergy) return;
@@ -79,27 +80,6 @@ function WaveReadPage() {
     setEnergyMean(meanEnergy);
     setEstEnergy(Math.round(energy));
     setDoodad(chooseDoodad(energy));
-  }
-
-  async function manageCountdown() {
-    document.documentElement.style.setProperty(
-      "--circle-dur",
-      `${config.time_to_read_info.toString()}s`,
-    );
-    await countdown().then(() => console.log("countdown complete"));
-  }
-
-  // TODO TODO TODO****************************************************************
-  async function countdown(): Promise<void> {
-    for (let i = config.time_to_read_info; i > 1; i--) {
-      if (window.location.href !== "http://localhost:5173/wave-read-page") {
-        break;
-      }
-      await new Promise((resolve) => setTimeout(resolve, 950));
-    }
-    if (window.location.href === "http://localhost:5173/wave-read-page") {
-      window.location.href = "/";
-    }
   }
 
   function chooseDoodad(val: number) {
@@ -156,11 +136,16 @@ function WaveReadPage() {
 
   // INFO, COUNTDOWN, LOADING ANIMATION
   useEffect(() => {
-    if (showInfo && waveData.length > 0) {
-      genInfo();
-      manageCountdown();
-    }
-  }, [showInfo]);
+    if (!(showInfo && waveData.length > 0)) return;
+    genInfo();
+
+    const timeout = setTimeout(() => {
+      navigate("/");
+    }, config.time_to_read_info * 1000);
+
+    return () => clearTimeout(timeout);
+
+  }, [showInfo, waveData, navigate]);
 
   return (
     // Main Container
@@ -175,9 +160,14 @@ function WaveReadPage() {
     >
       {showInfo && (
         <div className="absolute top-4 right-4 inset-0 z-50">
-          <Link to="/">
+          <button
+            onClick={() => {
+              navigate("/");
+              setShowInfo(false);
+            }}
+          >
             <LoadingCircle />
-          </Link>
+          </button>
         </div>
       )}
       {/* Meter animation */}
