@@ -9,5 +9,6 @@
         "low_height": 1,
         "high_period": 14,
         "low_period": 3
-    }
+    },
+    "time_to_read_info": 60
 }
