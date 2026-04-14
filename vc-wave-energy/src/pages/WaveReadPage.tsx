@@ -12,7 +12,7 @@ import { useAppContext } from "../AppContext";
 import { mean } from "simple-statistics";
 import LoadingCircle from "../components/LoadingCircle";
 import { Link } from "react-router-dom";
-import config from "../../config/arduino.config.json"
+import config from "../../config/arduino.config.json";
 
 function WaveReadPage() {
   const { rive: riveMeter, RiveComponent: RiveMeterComponent } = useRive({
@@ -38,7 +38,8 @@ function WaveReadPage() {
   const currentValue = useRef(1);
   const rafId = useRef<number | null>(null);
   const meterMounted = useRef(true);
-  const { waveData, setWaveData, selectedHeight } = useAppContext();
+  const { waveData, setWaveData, selectedHeight, selectedPeriod } =
+    useAppContext();
   const [showInfo, setShowInfo] = useState<boolean>(false);
   const [energyMean, setEnergyMean] = useState<number>(0);
   const [estEnergy, setEstEnergy] = useState<number>(0);
@@ -196,12 +197,16 @@ function WaveReadPage() {
         {showInfo && (
           <>
             <p className="text-4xl text-white text-center p-6">
-              The wave you chose created an average of {energyMean} Watts. If
-              scaled to its true ocean size of {selectedHeight} ft - that wave
-              would have generated {estEnergy} Watts, enough to power {doodad}!
+              This wave created an average of {energyMean} Watts. If scaled to
+              its true ocean size of {selectedHeight}{" "}
+              {selectedHeight > 1 ? "feet" : "foot"} with a period of{" "}
+              {selectedPeriod} seconds - that wave would have generated{" "}
+              {estEnergy} Watts, enough to power {doodad}!
             </p>
             <p className="text-4xl text-white text-center p-6">
-
+              What might happen if either number changed while keeping the other
+              the same? Would that create more energy or less? Try making a
+              different custom wave to find out!
             </p>
           </>
         )}
