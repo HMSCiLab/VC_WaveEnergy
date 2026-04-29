@@ -1,9 +1,13 @@
 import { InputClamps } from "../../electron/types/ipc";
 import config from "../../config/arduino.config.json"
 
-export const inputValidation = (
-    waveProperties: {height: number, period: number}
-): boolean => {
+type WaveProperties = {
+    height: number, 
+    period: number    
+}
+
+
+export const inputValidation = (waveProperties: WaveProperties): boolean => {
 
     const inputClamps: InputClamps = config.input_clamps;
 
@@ -34,4 +38,10 @@ export const clampInput = (waveProperties: {height: number, period: number}) => 
             Math.max(inputClamps.low_period, waveProperties.period)
         )
     }
+}
+
+export const convertToMM = (waveProperties: WaveProperties): number => {
+    const FEET_TO_MM = 304.8
+    let height = waveProperties.height * FEET_TO_MM
+    return Math.ceil(height / 10) * 10
 }

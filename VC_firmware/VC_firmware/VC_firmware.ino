@@ -13,22 +13,24 @@ void setup() {
   pinMode(config::MOTOR_DIRECTION_PIN, OUTPUT);
   pinMode(config::MOTOR_ENABLE_PIN, OUTPUT);
   digitalWrite(config::MOTOR_ENABLE_PIN, LOW);
-  pinMode(config::MOTOR_PWM_PIN, OUTPUT);
-  analogWrite(config::MOTOR_PWM_PIN, 0);
+  pinMode(config::MOTOR_STEP_PIN, OUTPUT);
+  analogWrite(config::MOTOR_STEP_PIN, 0);
 
   // LIMIT SWITCHES
   pinMode(config::LIMIT_SWITCH_A, INPUT);
   pinMode(config::LIMIT_SWITCH_B, INPUT);
   pinMode(config::LIMIT_SWITCH_C, INPUT);
+
+  return_to_start();
 }
 
 void loop() {
-  int user_height;
-  int user_period;
+  float user_height;
+  float user_period;
   int check = listener(user_height, user_period);
   if (check) {
-    print_ten();    // Demonstration
-    // generate_wave(user_height, user_period);   // Real life
+    // print_ten();    // Demonstration
+    generate_wave(user_height, user_period);   // Real life
   }
 }
 
