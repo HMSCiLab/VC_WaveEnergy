@@ -4,12 +4,12 @@
 namespace config {
 
   // PADDLE PINS
-  constexpr uint8_t MOTOR_ENABLE_PIN =      1;
-  constexpr uint8_t MOTOR_DIRECTION_PIN =   1;
-  constexpr uint8_t MOTOR_STEP_PIN =        1;
-  constexpr uint8_t LIMIT_SWITCH_A =        1;
-  constexpr uint8_t LIMIT_SWITCH_B =        1;
-  constexpr uint8_t LIMIT_SWITCH_C =        1;
+  constexpr uint8_t MOTOR_ENABLE_PIN =      12;
+  constexpr uint8_t MOTOR_DIRECTION_PIN =   7;
+  constexpr uint8_t MOTOR_STEP_PIN =        4;
+  constexpr uint8_t LIMIT_SWITCH_A =        2;
+  constexpr uint8_t LIMIT_SWITCH_B =        6;
+  constexpr uint8_t LIMIT_SWITCH_C =        11;
 
   // ELECTRICITY METER PINS
 
@@ -21,13 +21,13 @@ namespace config {
   * NOTE: Mechanically defined, do not change without changing
   * settings on the physical motor.
   */
-  constexpr int PULSES_PER_REV = 200;
+  constexpr float PULSES_PER_REV = 400.0;
 
   /**
   * Inches traveled by the lead nut per one revolution
   * of the motor.
   */
-  constexpr float INCHES_PER_REV = 1.0;
+  constexpr float INCHES_PER_REV = 2.25;
 
   /**
   * A common constant to describe the number of step pulses required
@@ -36,10 +36,14 @@ namespace config {
   constexpr float HZ_PER_INCH = PULSES_PER_REV / INCHES_PER_REV;
 
   /**
-  * Paddle forward velocity (inches/sec) required
-  * to generate a 1-foot wave.
+  * Maximum attainable wave height in inches.
   */
-  constexpr int BASE_HEIGHT_SPEED = 2;
+  constexpr float MAX_HEIGHT_IN = 3.8;
+
+  /**
+  * Minimum attainable wave height in inches.
+  */
+  constexpr float MIN_HEIGHT_IN = 0.2;
 
   /**
   * Paddle velocity (inches/sec) required to return the 
@@ -53,7 +57,12 @@ namespace config {
   * is used to calculate how many waves will be created given
   * the input period.
   */
-  constexpr int BASE_RUN_TIME =   30000;
+  constexpr int BASE_RUN_TIME = 10000;
+
+  /**
+  * Scale as prescribed by capstone group.
+  */
+  constexpr float SCALE = (float)1 / 50;
 
   // ERROR CHANNELS
   constexpr const char* FAILED_TO_RUN_ERROR = "ERROR-FTR";

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useAppContext } from "../AppContext";
 import { heightSelection, periodSelection, selected } from "../types/waveTypes";
 import { useNavigate } from "react-router-dom";
-import { inputValidation } from "./utils";
+import { inputValidation, convertToMM } from "./utils";
 
 const useWaveSelector = () => {
     const nav = useNavigate();
@@ -50,9 +50,10 @@ const useWaveSelector = () => {
                 height: selectedHeight.height,
                 period: selectedPeriod.period,
             };
-            if (inputValidation(waveProperties)) {
-                    window.ipcRenderer.invoke("send-wave", waveProperties);
-                    nav("/wave-read-page");
+        if (inputValidation(waveProperties)) {
+            waveProperties.height = convertToMM(waveProperties)
+            window.ipcRenderer.invoke("send-wave", waveProperties);
+            nav("/wave-read-page");
             } 
         }
     };
