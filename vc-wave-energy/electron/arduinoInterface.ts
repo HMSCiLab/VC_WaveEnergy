@@ -5,6 +5,9 @@ import {
   FEATHER_PRODUCT_ID, 
   FEATHER_VENDOR_ID,
   BAUD_RATE,
+  MINIMA_PRODUCT_ID,
+  MINIMA_VENDOR_ID
+
 } from "./config";
 import JSON5 from 'json5'
 import { InvalidUserInputError } from "./errors/errors";
@@ -40,8 +43,8 @@ async function tryArduinoConnection(){
   const ports = await SerialPort.list();
   const arduinoPort = ports.find((p: any) => 
     p.vendorId && (
-      p.vendorId === FEATHER_VENDOR_ID||
-      p.productId === FEATHER_PRODUCT_ID
+      p.vendorId === MINIMA_VENDOR_ID||
+      p.productId === MINIMA_PRODUCT_ID
     )
   );
 

@@ -15,6 +15,8 @@ const arduino_config = JSON.parse(
 );
 export const FEATHER_VENDOR_ID = arduino_config.ports.featherM0_vendor_id;
 export const FEATHER_PRODUCT_ID = arduino_config.ports.featherM0_wifi_product_id;
+export const MINIMA_VENDOR_ID = arduino_config.ports.r4minima_vendor_id;
+export const MINIMA_PRODUCT_ID = arduino_config.ports.r4minima_product_id;
 export const BAUD_RATE = arduino_config.baud_rate;
 
 // CUSTOM WAVE CONFIGURATIONS

@@ -15,7 +15,6 @@ export const buoyDataZ = z.object({
     longitude: z.number(),
     significant_wave_height: z.number(),
     mean_period: z.number(),
-    // stationID: z.nullable(z.number())
     stationID: z.number().nullable().optional()
 }).transform((d) => ({
   ts: new Date(d.timestamp),

@@ -1,7 +1,9 @@
 {
     "ports": {
         "featherM0_vendor_id": "239a",
-        "featherM0_wifi_product_id": "800b"
+        "featherM0_wifi_product_id": "800b",
+        "r4minima_vendor_id": "2341",
+        "r4minima_product_id": "0069"
     },
     "baud_rate": 9600,
     "input_clamps": {

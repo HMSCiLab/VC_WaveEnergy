@@ -54,8 +54,10 @@ const PIPE_MAX_TRIES = pacwave_config.healthcheck.max_failures;
 const arduino_config = JSON.parse(
   fs.readFileSync(ARDUINO_CONFIG, "utf-8")
 );
-const FEATHER_VENDOR_ID = arduino_config.ports.featherM0_vendor_id;
-const FEATHER_PRODUCT_ID = arduino_config.ports.featherM0_wifi_product_id;
+arduino_config.ports.featherM0_vendor_id;
+arduino_config.ports.featherM0_wifi_product_id;
+const MINIMA_VENDOR_ID = arduino_config.ports.r4minima_vendor_id;
+const MINIMA_PRODUCT_ID = arduino_config.ports.r4minima_product_id;
 const BAUD_RATE = arduino_config.baud_rate;
 const custom_wave_config = JSON.parse(
   fs.readFileSync(CUSTOM_WAVE_CONFIG, "utf-8")
@@ -1162,7 +1164,7 @@ function decomposeLine(line2) {
 async function tryArduinoConnection() {
   const ports = await SerialPort.list();
   const arduinoPort = ports.find(
-    (p) => p.vendorId && (p.vendorId === FEATHER_VENDOR_ID || p.productId === FEATHER_PRODUCT_ID)
+    (p) => p.vendorId && (p.vendorId === MINIMA_VENDOR_ID || p.productId === MINIMA_PRODUCT_ID)
   );
   if (!arduinoPort) {
     if (port && port.isOpen) {
@@ -20552,7 +20554,6 @@ const buoyDataZ = object({
   longitude: number(),
   significant_wave_height: number(),
   mean_period: number(),
-  // stationID: z.nullable(z.number())
   stationID: number().nullable().optional()
 }).transform((d) => ({
   ts: new Date(d.timestamp),

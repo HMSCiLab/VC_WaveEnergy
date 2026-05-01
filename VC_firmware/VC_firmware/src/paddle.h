@@ -4,5 +4,5 @@
 #include "interface.h"
 #include "config.h"
 
-void generate_wave(float user_height, float user_period);
+void generate_wave(uint16_t user_height, uint16_t user_period);
 void return_to_start();

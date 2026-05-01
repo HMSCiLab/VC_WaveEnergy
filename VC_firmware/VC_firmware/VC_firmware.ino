@@ -20,13 +20,11 @@ void setup() {
   pinMode(config::LIMIT_SWITCH_A, INPUT);
   pinMode(config::LIMIT_SWITCH_B, INPUT);
   pinMode(config::LIMIT_SWITCH_C, INPUT);
-
-  return_to_start();
 }
 
 void loop() {
-  float user_height;
-  float user_period;
+  uint16_t user_height;
+  uint16_t user_period;
   int check = listener(user_height, user_period);
   if (check) {
     // print_ten();    // Demonstration

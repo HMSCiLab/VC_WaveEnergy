@@ -1,3 +1,4 @@
+#include <sys/_stdint.h>
 #include "interface.h"
 
 /**
@@ -16,7 +17,7 @@ String get_input() {
 /**
 * Check Serial for communication.
 */
-int listener(float &user_height, float &user_period) {
+int listener(uint16_t &user_height, uint16_t &user_period) {
   if (Serial.available()){
     String input = get_input();
     return validator(user_height, user_period, input);
@@ -39,7 +40,7 @@ void send_message(String channel, String mssg, float data) {
 *  }
 *
 */
-int validator(float &user_height, float &user_period, String &input) {
+int validator(uint16_t &user_height, uint16_t &user_period, String &input) {
   JsonDocument json_req;
   DeserializationError err = deserializeJson(json_req, input);
   if (err) {

@@ -24,16 +24,16 @@ namespace config {
   constexpr float PULSES_PER_REV = 400.0;
 
   /**
-  * Inches traveled by the lead nut per one revolution
+  * MM traveled by the lead nut per one revolution
   * of the motor.
   */
-  constexpr float INCHES_PER_REV = 2.25;
+  constexpr float MM_PER_REV = 55;
 
   /**
   * A common constant to describe the number of step pulses required
   * for the lead nut to travel one inch.
   */
-  constexpr float HZ_PER_INCH = PULSES_PER_REV / INCHES_PER_REV;
+  constexpr float HZ_PER_MM = PULSES_PER_REV / MM_PER_REV;
 
   /**
   * Maximum attainable wave height in inches.
@@ -50,7 +50,7 @@ namespace config {
   * paddle to the start in order to generate a 
   * 3s period for a 1 foot wave.
   */
-  constexpr int BASE_RETURN_SPEED = 2 * HZ_PER_INCH;
+  constexpr int BASE_RETURN_SPEED = 2 * HZ_PER_MM;
 
   /**
   * Length of time (ms) the paddle will run. This constant
@@ -62,7 +62,7 @@ namespace config {
   /**
   * Scale as prescribed by capstone group.
   */
-  constexpr float SCALE = (float)1 / 50;
+  constexpr float SCALE = (float)1 / 10;
 
   // ERROR CHANNELS
   constexpr const char* FAILED_TO_RUN_ERROR = "ERROR-FTR";
