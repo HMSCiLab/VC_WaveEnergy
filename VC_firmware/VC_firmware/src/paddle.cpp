@@ -89,7 +89,7 @@ void go_to_limit_B(){
 * the user defined period.
 */
 void generate_wave(uint16_t user_height, uint16_t user_period) {
-
+  if (user_period <= 0) return;
   if (user_height <= 0) return;
 
   // Convert height to HZ per inch scaled.
@@ -98,12 +98,13 @@ void generate_wave(uint16_t user_height, uint16_t user_period) {
   uint32_t estimated_power = compute_power(user_height, user_period);
 
   // Run time divided by input period in ms.
-  long num_waves = (long)(config::BASE_RUN_TIME / period_ms) / 2;
+  long num_waves = (long)(config::LONG_PERIOD_RUN_TIME / period_ms) / 2;
 
   // Go to start, if short period, go to middle.
   go_to_limit_C();
   if (period_ms < 1000) {
     go_to_limit_B();
+    num_waves = (long)(config::SHORT_PERIOD_RUN_TIME / period_ms) / 2;
   }
 
   // Generate n waves
