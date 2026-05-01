@@ -77,7 +77,7 @@ function WaveReadPage() {
   function genInfo() {
     const meanEnergy = mean(waveData);
     const energy: number = meanEnergy * selectedHeight;
-    setEnergyMean(meanEnergy);
+    setEnergyMean(Math.round(meanEnergy));
     setEstEnergy(Math.round(energy));
     setDoodad(chooseDoodad(energy));
   }

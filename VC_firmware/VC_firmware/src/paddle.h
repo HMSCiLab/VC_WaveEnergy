@@ -5,4 +5,3 @@
 #include "config.h"
 
 void generate_wave(uint16_t user_height, uint16_t user_period);
-void return_to_start();

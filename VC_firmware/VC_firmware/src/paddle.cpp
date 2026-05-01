@@ -47,33 +47,39 @@ uint16_t choose_period_ms(uint16_t user_period) {
   else return 1800;
 }
 
-void return_to_start(){
-// if (digitalRead(config::LIMIT_SWITCH_A == HIGH)){
-  digitalWrite(config::MOTOR_DIRECTION_PIN, LOW);
-  delayMicroseconds(5);
-  digitalWrite(config::MOTOR_ENABLE_PIN, HIGH);
-  delay(5);
-  tone(config::MOTOR_STEP_PIN, 100);
-  while(config::LIMIT_SWITCH_A == HIGH);
-  digitalWrite(config::MOTOR_ENABLE_PIN, LOW);
-  // }
+uint16_t compute_power(uint16_t user_height, uint16_t user_period) {
+  uint64_t raw = (uint64_t)user_height * user_height * user_period;
+  uint16_t power = raw / 1000000;
+  return constrain(power, 0, 100);  // Send something back between 0 & 100
 }
 
-/*
-* Convert the given user height in feet to the number of 
-* motor step pulses required to create a scaled version of
-* this wave.
-*
-* User height (ft) is converted to inches. It's then scaled
-* based on a configurable speed constant that should produce
-* a decided upon consistent wave height. The returned value
-* is converted to HZ per inch (Pulses per Revolution / Inches per Revolution)
-* scaled by a configurable SCALE value.
-*/
-int convert_user_height(uint16_t user_height) {
-  uint16_t height_scaled = user_height * config::SCALE;
-  return height_scaled * config::HZ_PER_MM;
-  // uint16_t clamped = constrain(height_scaled, config::MIN_HEIGHT_IN, config::MAX_HEIGHT_IN);
+void go_to_limit_C(){
+  while (digitalRead(config::LIMIT_SWITCH_C) == HIGH) {
+    // Direction forward & motor on
+    digitalWrite(config::MOTOR_DIRECTION_PIN, LOW);
+    delayMicroseconds(5); // Driver setup time
+    digitalWrite(config::MOTOR_ENABLE_PIN, HIGH);
+    delay(5); // Driver setup time
+    tone(config::MOTOR_STEP_PIN, 400);
+  }
+  noTone(config::MOTOR_STEP_PIN);
+  digitalWrite(config::MOTOR_ENABLE_PIN, LOW);
+  delay(5);
+}
+
+void go_to_limit_B(){
+  while (digitalRead(config::LIMIT_SWITCH_B) == HIGH) {
+    // Direction backward & motor on
+    digitalWrite(config::MOTOR_DIRECTION_PIN, HIGH);
+    delayMicroseconds(5); // Driver setup time
+    digitalWrite(config::MOTOR_ENABLE_PIN, HIGH);
+    delay(5); // Driver setup time
+    tone(config::MOTOR_STEP_PIN, 400);
+  }
+  noTone(config::MOTOR_STEP_PIN);
+  digitalWrite(config::MOTOR_ENABLE_PIN, LOW);
+  delay(5);
+
 }
 
 /*
@@ -83,15 +89,22 @@ int convert_user_height(uint16_t user_height) {
 * the user defined period.
 */
 void generate_wave(uint16_t user_height, uint16_t user_period) {
-  if (user_period <= 0) return;
+
   if (user_height <= 0) return;
 
   // Convert height to HZ per inch scaled.
   uint16_t height_hz = choose_height_hz(user_height);
   uint16_t period_ms = choose_period_ms(user_period);
+  uint32_t estimated_power = compute_power(user_height, user_period);
 
   // Run time divided by input period in ms.
   long num_waves = (long)(config::BASE_RUN_TIME / period_ms) / 2;
+
+  // Go to start, if short period, go to middle.
+  go_to_limit_C();
+  if (period_ms < 1000) {
+    go_to_limit_B();
+  }
 
   // Generate n waves
   for (int n=0; n < num_waves; n++){
@@ -106,7 +119,6 @@ void generate_wave(uint16_t user_height, uint16_t user_period) {
     noTone(config::MOTOR_STEP_PIN);
     
     // Go half period and stop
-
     digitalWrite(config::MOTOR_ENABLE_PIN, LOW);
     delay(5);
 
@@ -122,6 +134,10 @@ void generate_wave(uint16_t user_height, uint16_t user_period) {
     digitalWrite(config::MOTOR_ENABLE_PIN, LOW);
     delay(5);
 
+    // TODO: FIGURE OUT SOME KIND OF ACTUAL ENERGY CREATION FEEDBACK
+    int variation = random(0, 100);
+    send_message("WAVEDATA", "", variation);
   }
   send_message("EOT", "", NAN);
+  go_to_limit_C();
 }

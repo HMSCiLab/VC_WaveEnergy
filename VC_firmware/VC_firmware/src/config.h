@@ -57,7 +57,7 @@ namespace config {
   * is used to calculate how many waves will be created given
   * the input period.
   */
-  constexpr int BASE_RUN_TIME = 10000;
+  constexpr int BASE_RUN_TIME = 30000;
 
   /**
   * Scale as prescribed by capstone group.
