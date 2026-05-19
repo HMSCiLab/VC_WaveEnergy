@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppContext } from "../AppContext";
 import { buoyData } from "../../electron/types/buoyDataType";
-import { PacWaveDataError } from "../../electron/errors/errors";
 import { clampInput } from "../page-logic/utils";
 import LoadingSpinner from "../components/LoadingSpinner";
 
@@ -49,27 +48,18 @@ function StartPage() {
   };
 
   /**
-   * Get CDIP data via the offical API.
-   */
-  const getCdipData = async () => {
-    console.log("Getting CDIP data");
-    setLoading(true);
-    return await window.ipcRenderer.invoke("get-wave-data");
-  };
-
-  /**
    * Get CDIP data via NFS mount at PacWave's CEOAS based server netwrok.
    */
   const getDriveData = async () => {
-    setLoading(true);
     try {
+      setLoading(true);
       const data: buoyData = await window.ipcRenderer.invoke("get-drive-data");
       sendWaveOverIPC(data);
       console.log(`Drive height/period ${data.height}/${data.period}`);
-    } catch (PacWaveDataError) {
-      const data: buoyData = await getCdipData();
-      console.log(`CDIP height/period ${data.height}/${data.period}`);
-      sendWaveOverIPC(data);
+    }
+    catch (err) {
+      setLoading(false);
+      console.log(err);
     }
   };
 
