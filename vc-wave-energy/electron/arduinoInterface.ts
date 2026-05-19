@@ -43,8 +43,8 @@ async function tryArduinoConnection(){
   const ports = await SerialPort.list();
   const arduinoPort = ports.find((p: any) => 
     p.vendorId && (
-      p.vendorId === MINIMA_VENDOR_ID||
-      p.productId === MINIMA_PRODUCT_ID
+      p.vendorId === FEATHER_VENDOR_ID ||
+      p.productId === FEATHER_PRODUCT_ID
     )
   );
 

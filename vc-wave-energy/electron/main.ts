@@ -1,10 +1,11 @@
 import { app, BrowserWindow, ipcMain } from 'electron'
 import path from 'node:path'
-import { cleanup, initArduino, registerArduinoHandlers } from './arduinoInterface'
-import { CheckPacWavePipe, initPacWavePipe, registerPyPipeHandlers } from './pythonInterface'
-import { registerPacWaveHandlers } from './pacwaveInterface'
+
 import { APP_ROOT, ELECTRON_DIST } from './paths'
 import { HEIGHT_SELECTION_OPTIONS, PERIOD_SELECTION_OPTIONS } from './config'
+
+import { cleanup, initArduino, registerArduinoHandlers } from './arduinoInterface'
+import { refreshData, registerPacWaveHandlers } from './pacwaveInterface'
 
 
 // 🚧 Use ['ENV_NAME'] avoid vite:define plugin - Vite@2.x
@@ -62,11 +63,12 @@ app.on('activate', () => {
 
 app.whenReady().then(() => {
   createWindow();
+  
   initArduino(safeSend);
   registerArduinoHandlers();
-  initPacWavePipe();
-  CheckPacWavePipe();
-  registerPyPipeHandlers();
+
+  refreshData();
+  setInterval(refreshData, 1000 * 60 * 60);
   registerPacWaveHandlers();
 
   ipcMain.handle('get-height-options', async () => {

@@ -5,5 +5,8 @@
   "healthcheck": {
     "interval_ms": 10000,
     "max_failures": 3
-  }
+  },
+  "remote_host": "hmsc-visitor@pacwave-data.ceoas.oregonstate.edu",
+  "remote_file": "/data/hatfield/waverider/waverider.json"
+
 }

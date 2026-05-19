@@ -8,6 +8,8 @@ const pacwave_config = JSON.parse(
 export const SOCK_PATH = pacwave_config.ipc.uds_path;
 export const TRY_INTERVAL = pacwave_config.healthcheck.interval_ms;
 export const PIPE_MAX_TRIES = pacwave_config.healthcheck.max_failures;
+export const REMOTE_HOST = pacwave_config.remote_host;
+export const REMOTE_FILE = pacwave_config.remote_file;
 
 // ARDUINO CONFIGURATIONS
 const arduino_config = JSON.parse(
