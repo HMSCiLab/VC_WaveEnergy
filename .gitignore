@@ -172,6 +172,7 @@ build/
 develop-eggs/
 dist/
 dist-electron/
+release/
 downloads/
 eggs/
 .eggs/
