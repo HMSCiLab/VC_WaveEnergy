@@ -1,9 +1,7 @@
 import { request, setGlobalDispatcher, Agent } from 'undici';
 import { restartPyPipe } from './pythonProcControl';
 import { SOCK_PATH, PIPE_MAX_TRIES, TRY_INTERVAL } from './config';
-import { ipcMain } from 'electron';
-import { z } from 'zod';
-import { buoyDataZ } from './types/buoyDataType';
+// import { ipcMain } from 'electron';
 
 let failures = 0;
 let getting_data: boolean = false;
@@ -46,32 +44,32 @@ async function tryStatus () {
     }
 }
 
-async function getCdipData() {
-    try {
-        getting_data = true;
-        // Try to access pipeline
-        const { statusCode, body } = await request('http://localhost/data/cdip', {
-            headersTimeout: 10000,
-            bodyTimeout: 10000
-        });
-        if (statusCode != 200){
-            throw new Error(`Bad status: ${statusCode}`);
-        }
-        // Success, fulfill promise
-        const json = await body.json();
-        console.log(json);
-        type BuoyData = z.infer<typeof buoyDataZ>;
-        const data: BuoyData = buoyDataZ.parse(json);
-        getting_data = false;
-        return data
-    } 
-    catch (err) {
-        console.error('CDIP fetch failed:', err);
-        throw err; // propagate to renderer
-    }
-}
+// async function getCdipData() {
+//     try {
+//         getting_data = true;
+//         // Try to access pipeline
+//         const { statusCode, body } = await request('http://localhost/data/cdip', {
+//             headersTimeout: 10000,
+//             bodyTimeout: 10000
+//         });
+//         if (statusCode != 200){
+//             throw new Error(`Bad status: ${statusCode}`);
+//         }
+//         // Success, fulfill promise
+//         const json = await body.json();
+//         console.log(json);
+//         // type BuoyData = z.infer<typeof buoyDataZ>;
+//         // const data: BuoyData = buoyDataZ.parse(json);
+//         getting_data = false;
+//         // return data
+//     } 
+//     catch (err) {
+//         console.error('CDIP fetch failed:', err);
+//         throw err; // propagate to renderer
+//     }
+// }
 
-// HANDLERS
-export function registerPyPipeHandlers(){
-    ipcMain.handle('get-wave-data', getCdipData)
-}
+// // HANDLERS
+// export function registerPyPipeHandlers(){
+//     ipcMain.handle('get-wave-data', getCdipData)
+// }

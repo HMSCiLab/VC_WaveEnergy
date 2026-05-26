@@ -10,7 +10,6 @@ import {
 
 } from "./config";
 import JSON5 from 'json5'
-import { InvalidUserInputError } from "./errors/errors";
 
 const require = createRequire(import.meta.url);
 const { SerialPort } = require('serialport');
@@ -44,7 +43,9 @@ async function tryArduinoConnection(){
   const arduinoPort = ports.find((p: any) => 
     p.vendorId && (
       p.vendorId === FEATHER_VENDOR_ID ||
-      p.productId === FEATHER_PRODUCT_ID
+      p.productId === FEATHER_PRODUCT_ID ||
+      p.vendorId === MINIMA_VENDOR_ID ||
+      p.productId === MINIMA_PRODUCT_ID
     )
   );
 
@@ -124,7 +125,7 @@ export function registerArduinoHandlers() {
         return { connected: !!(port && port.isOpen) }
     })
 
-    ipcMain.handle('send-wave', async(event, selected) => {
+    ipcMain.handle('send-wave', async(selected) => {
         // selected -> {size: number, period: number}
         const cmmd: string = JSON.stringify(selected);
         port.write(cmmd + '\n', (err: Error | null | undefined) => {

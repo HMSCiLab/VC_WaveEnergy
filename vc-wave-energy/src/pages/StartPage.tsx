@@ -9,7 +9,6 @@ import {
 } from "../../electron/types/buoyDataType";
 import { clampInput } from "../page-logic/utils";
 import LoadingSpinner from "../components/LoadingSpinner";
-import { set } from "zod";
 
 function StartPage() {
   const navigate = useNavigate();

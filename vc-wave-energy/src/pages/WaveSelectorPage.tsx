@@ -1,5 +1,7 @@
 import bgImage from "../assets/background-ocean.jpg";
 import RiveSlider from "../components/RiveSlider";
+import heightSlider from "../assets/heightslider.riv"
+import periodSlider from "../assets/periodslider.riv"
 import { useAppContext } from "../AppContext";
 import useWaveSelector from "../page-logic/waveSelectorLogic";
 import { Link } from "react-router-dom";
@@ -32,14 +34,14 @@ function WaveSelectorPage() {
         <div className="flex flex-1 gap-8 items-center justify-center">
           <div className="flex flex-1 h-full">
             <RiveSlider
-              rivFile="/src/assets/heightslider.riv"
+              rivFile={heightSlider}
               onSelectionChange={setActiveHeightIndex}
             />
           </div>
 
           <div className="flex flex-1 h-full pe-6">
             <RiveSlider
-              rivFile="/src/assets/periodslider.riv"
+              rivFile={periodSlider}
               onSelectionChange={setActivePeriodIndex}
             />
           </div>

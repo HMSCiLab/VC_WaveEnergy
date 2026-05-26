@@ -6,6 +6,8 @@ import tailwindcss from '@tailwindcss/vite'
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: './',
+  assetsInclude: ['**/*.riv'],
   plugins: [
     react(),
     tailwindcss(),
@@ -26,6 +28,7 @@ export default defineConfig({
         // https://github.com/electron-vite/vite-plugin-electron-renderer/issues/78#issuecomment-2053600808
         ? undefined
         : {},
-    }),
-  ],
+      }),
+    ],
+    
 })

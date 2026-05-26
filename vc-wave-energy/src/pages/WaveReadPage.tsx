@@ -5,6 +5,7 @@ import {
   Layout,
   useStateMachineInput,
 } from "@rive-app/react-canvas";
+import powerMeter from "../assets/power_meter.riv"
 import bgImage from "../assets/background-ocean.jpg";
 import { useEffect, useState, useRef } from "react";
 import { IpcRendererEvent } from "electron";
@@ -16,7 +17,7 @@ import { useNavigate } from "react-router-dom";
 
 function WaveReadPage() {
   const { rive: riveMeter, RiveComponent: RiveMeterComponent } = useRive({
-    src: "/src/assets/power_meter.riv",
+    src: powerMeter,
     stateMachines: "State Machine 1",
     autoplay: true,
     layout: new Layout({

@@ -42,6 +42,6 @@ export const clampInput = (waveProperties: {height: number, period: number}) => 
 
 export const convertToMM = (waveProperties: WaveProperties): number => {
     const FEET_TO_MM = 304.8
-    let height = waveProperties.height * FEET_TO_MM
+    const height = waveProperties.height * FEET_TO_MM
     return Math.ceil(height / 10) * 10
 }
