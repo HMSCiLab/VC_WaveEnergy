@@ -171,6 +171,7 @@ __pycache__/
 build/
 develop-eggs/
 dist/
+dist-electron/
 downloads/
 eggs/
 .eggs/

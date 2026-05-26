@@ -64,13 +64,16 @@ app.on('activate', () => {
 app.whenReady().then(() => {
   createWindow();
   
+  // ARUDINO
   initArduino(safeSend);
   registerArduinoHandlers();
 
+  // PACWAVE PIPE
   refreshData();
   setInterval(refreshData, 1000 * 60 * 60);
   registerPacWaveHandlers();
 
+  // CONFIG GETTERS
   ipcMain.handle('get-height-options', async () => {
     return HEIGHT_SELECTION_OPTIONS;
   })
