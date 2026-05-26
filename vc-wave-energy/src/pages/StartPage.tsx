@@ -3,9 +3,10 @@ import bgVideo from "../assets/wave.mp4";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppContext } from "../AppContext";
-import { buoyData } from "../../electron/types/buoyDataType";
+import { BuoyData, BuoyDataParseResult } from "../../electron/types/buoyDataType";
 import { clampInput } from "../page-logic/utils";
 import LoadingSpinner from "../components/LoadingSpinner";
+import { set } from "zod";
 
 function StartPage() {
   const navigate = useNavigate();
@@ -31,7 +32,7 @@ function StartPage() {
     });
   }, []);
 
-  const sendWaveOverIPC = async (data: buoyData) => {
+  const sendWaveOverIPC = async (data: BuoyData) => {
     setSelectedHeight(Number(data.height.toFixed(1)));
     setSelectedPeriod(Number(data.period.toFixed(1)));
     const waveProperties = clampInput({
@@ -53,11 +54,18 @@ function StartPage() {
   const getDriveData = async () => {
     try {
       setLoading(true);
-      const data: buoyData = await window.ipcRenderer.invoke("get-drive-data");
-      sendWaveOverIPC(data);
-      console.log(`Drive height/period ${data.height}/${data.period}`);
-    }
-    catch (err) {
+      const pacwaveData: BuoyDataParseResult = await window.ipcRenderer.invoke("get-drive-data");
+
+      if (!pacwaveData.success) {
+        setLoading(false)
+        console.log(pacwaveData.data)
+        return
+      }
+      
+      sendWaveOverIPC(pacwaveData.data);
+      console.log(`Drive height/period ${pacwaveData.data.height}/${pacwaveData.data.period}`);
+
+    } catch (err) {
       setLoading(false);
       console.log(err);
     }
@@ -92,10 +100,7 @@ function StartPage() {
               Make your own wave
             </Button>
 
-            <Button
-              onClick={getDriveData}
-              className={buttonStyles}
-            >
+            <Button onClick={getDriveData} className={buttonStyles}>
               {loading ? (
                 <div className="flex items-center justify-center">
                   <span className="invisible">See real-time Waves</span>

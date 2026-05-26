@@ -1,6 +1,3 @@
-var __defProp = Object.defineProperty;
-var __defNormalProp = (obj, key2, value) => key2 in obj ? __defProp(obj, key2, { enumerable: true, configurable: true, writable: true, value }) : obj[key2] = value;
-var __publicField = (obj, key2, value) => __defNormalProp(obj, typeof key2 !== "symbol" ? key2 + "" : key2, value);
 import { app, ipcMain, BrowserWindow } from "electron";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -3234,9 +3231,10 @@ function _isoDateTime(Class, params) {
   });
 }
 // @__NO_SIDE_EFFECTS__
-function _number(Class, params) {
+function _coercedNumber(Class, params) {
   return new Class({
     type: "number",
+    coerce: true,
     checks: [],
     ...normalizeParams(params)
   });
@@ -4261,9 +4259,6 @@ const ZodNumber = /* @__PURE__ */ $constructor("ZodNumber", (inst, def) => {
   inst.isFinite = true;
   inst.format = bag.format ?? null;
 });
-function number(params) {
-  return /* @__PURE__ */ _number(ZodNumber, params);
-}
 const ZodNumberFormat = /* @__PURE__ */ $constructor("ZodNumberFormat", (inst, def) => {
   $ZodNumberFormat.init(inst, def);
   ZodNumber.init(inst, def);
@@ -4575,30 +4570,34 @@ function refine(fn, _params = {}) {
 function superRefine(fn) {
   return /* @__PURE__ */ _superRefine(fn);
 }
-const buoyDataZ = object({
-  timestamp: datetime(),
+function number(params) {
+  return /* @__PURE__ */ _coercedNumber(ZodNumber, params);
+}
+const BuoyDataSchema = object({
+  waverider_id: number(),
+  source_data_timestamp_utc: datetime(),
   latitude: number(),
   longitude: number(),
-  significant_wave_height: number(),
-  mean_period: number(),
-  stationID: number().nullable().optional()
-}).transform((d) => ({
-  ts: new Date(d.timestamp),
-  lat: d.latitude,
-  long: d.longitude,
-  height: d.significant_wave_height,
-  period: d.mean_period
-  //   stationID: d.stationID
+  significant_wave_height_m: number(),
+  mean_period_s: number(),
+  wave_power_kw_per_m: number()
+}).loose().transform((data) => ({
+  stationID: data.waverider_id,
+  ts: new Date(data.source_data_timestamp_utc),
+  lat: data.latitude,
+  long: data.longitude,
+  height: data.significant_wave_height_m,
+  period: data.mean_period_s,
+  wavePower: data.wave_power_kw_per_m
 }));
-class PacWaveDataError extends Error {
-  constructor(message, statusCode = 404) {
-    super(message);
-    __publicField(this, "statusCode");
-    this.name = "PacWaveDataError";
-    this.statusCode = statusCode;
-    Object.setPrototypeOf(this, PacWaveDataError.prototype);
+const normalizeData = (rawData) => {
+  const parsedData = BuoyDataSchema.safeParse(rawData);
+  if (!parsedData.success) {
+    console.log("Data parsing error: ", parsedData.error.message);
+    return { success: false, data: null, err: parsedData.error };
   }
-}
+  return { success: true, data: parsedData.data, err: null };
+};
 const refreshData = async () => {
   const tempFile = path$1.join(USER_DATA_DIR, "waverider.tmp");
   const remoteFile = [REMOTE_HOST, ":", REMOTE_FILE].join("");
@@ -4623,16 +4622,7 @@ const refreshData = async () => {
 const getDriveData = async () => {
   const raw_json = fs$1.readFileSync(USER_DATA_FILE, "utf-8");
   const json = JSON.parse(raw_json);
-  console.log(json);
-  const data = buoyDataZ.parse(json);
-  const DAY_MS = 86400 * 1e3;
-  const HOUR_MS = DAY_MS / 24;
-  const now = /* @__PURE__ */ new Date();
-  const ts = new Date(data.ts);
-  console.log(`${now.getTime()} - ${ts.getTime()} = ${now.getTime() - ts.getTime()}`);
-  if (now.getDay() - ts.getDay() > DAY_MS) throw new PacWaveDataError(`PacWave data more than a day old.`);
-  if (now.getTime() - ts.getTime() > HOUR_MS * 6) throw new PacWaveDataError(`PacWave data more than 6 hours old.`);
-  return data;
+  return normalizeData(json);
 };
 function registerPacWaveHandlers() {
   ipcMain.handle("get-drive-data", getDriveData);
