@@ -3,14 +3,11 @@ import { NavigateFunction } from "react-router-dom";
 import { useAppContext } from "../AppContext";
 import config from "../../config/arduino.config.json";
 
-export const useWaveInfo = (nav: NavigateFunction, showInfo: boolean) => {
-  const {waveData, selectedHeight, selectedPeriod } = useAppContext();
 
-  const [estEnergy, setEstEnergy] = useState<number>(0);
-  const [doodad, setDoodad] = useState<string>("doodad");
-
-  const computeEnergy = () => {
-    const instantaneousKW = (0.49 * (selectedHeight ** 2) * selectedPeriod);
+export const computeEnergy = (h: number, t: number) => {
+    const instantaneousKW = (0.49 * (h ** 2) * t);
+    // 20 meter width & operating for one hour
+    const kilowattHours = instantaneousKW * 20 * 1
     const animationNums = new Array();
     
     // Get ten random number +/- 10 of the instantaneous KW
@@ -19,13 +16,19 @@ export const useWaveInfo = (nav: NavigateFunction, showInfo: boolean) => {
       if (num > 0) animationNums.push(num)
     }
 
-    return {instantaneousKW, animationNums}
+    return {instantaneousKW, kilowattHours, animationNums}
   }
 
+export const useWaveInfo = (nav: NavigateFunction, showInfo: boolean) => {
+  const {waveData, selectedHeight, selectedPeriod } = useAppContext();
+
+  const [estEnergy, setEstEnergy] = useState<number>(0);
+  const [doodad, setDoodad] = useState<string>("doodad");
+
   const genInfo = () => {
-    const { instantaneousKW, animationNums } = computeEnergy();
-    setEstEnergy(Math.round(instantaneousKW));
-    setDoodad(chooseDoodad(instantaneousKW));
+    const { kilowattHours } = computeEnergy(selectedHeight, selectedPeriod);
+    setEstEnergy(Math.round(kilowattHours));
+    setDoodad(chooseDoodad(kilowattHours));
   }
 
   const chooseDoodad = (val: number) => {

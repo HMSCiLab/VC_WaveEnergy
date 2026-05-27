@@ -59,7 +59,7 @@ function WaveReadPage() {
               If scaled to its true ocean size of {selectedHeight}{" "}
               {selectedHeight > 1 ? "feet" : "foot"} with a period of{" "}
               {selectedPeriod} seconds - that set of waves would have generated{" "}
-              {estEnergy} Kilowatts, enough to {doodad}!
+              {estEnergy} kilowatt-hours, enough to {doodad}!
             </p>
             <p className="text-4xl text-white text-center p-6">
               What might happen if either number changed while keeping the other
