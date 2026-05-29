@@ -1,5 +1,5 @@
 import heightChart from "../assets/heightChart.svg";
-import periodChart from "../assets/periodChart.svg";
+import periodChart from "../assets/periodChart-3.svg";
 
 function LearnPage1Copy() {
   return (

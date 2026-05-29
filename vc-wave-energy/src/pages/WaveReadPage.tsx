@@ -58,8 +58,8 @@ function WaveReadPage() {
             <p className="text-4xl text-white text-center p-6">
               If scaled to its true ocean size of {selectedHeight}{" "}
               {selectedHeight > 1 ? "feet" : "foot"} with a period of{" "}
-              {selectedPeriod} seconds - that set of waves would have generated{" "}
-              {estEnergy} kilowatt-hours, enough to {doodad}!
+              {selectedPeriod} seconds, that set of waves would have generated{" "}
+              {estEnergy} kilowatt-hours. That's enough to {doodad}!
             </p>
             <p className="text-4xl text-white text-center p-6">
               What might happen if either the height or period changed? Would

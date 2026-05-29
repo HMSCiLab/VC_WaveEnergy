@@ -6,13 +6,13 @@ import config from "../../config/arduino.config.json";
 
 export const computeEnergy = (h: number, t: number) => {
     const instantaneousKW = (0.49 * (h ** 2) * t);
-    // 20 meter width & operating for one hour
-    const kilowattHours = instantaneousKW * 20 * 1
+    // 2 meter width & operating for one hour
+    const kilowattHours = instantaneousKW * 2 * 1
     const animationNums = new Array();
     
     // Get ten random number +/- 10 of the instantaneous KW
     while (animationNums.length <= 10) {
-      let num = ((Math.random() * 20) - 10) + instantaneousKW;
+      let num = ((Math.random() * 100) - 50) + instantaneousKW;
       if (num > 0) animationNums.push(num)
     }
 
