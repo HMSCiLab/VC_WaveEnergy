@@ -6,11 +6,11 @@ function PageChanger() {
 
   return (
     <div className="flex flex-row ml-auto items-center justify-end">
-      <button className="flex" onClick={changeLeft}>
+      <button className={`${pageNumber === "2" ? "visible" : "invisible" }`} onClick={changeLeft}>
         <ArrowLeftIcon className="text-white size-20" />
       </button>
       <span className="flex text-white text-5xl mx-8">{pageNumber}/2</span>
-      <button className="flex" onClick={changeRight}>
+      <button className={`${pageNumber === "1" ? "visible" : "invisible" }`} onClick={changeRight}>
         <ArrowRightIcon className="text-white size-20" />
       </button>
     </div>

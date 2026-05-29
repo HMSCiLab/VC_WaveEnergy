@@ -62,9 +62,9 @@ function WaveReadPage() {
               {estEnergy} kilowatt-hours, enough to {doodad}!
             </p>
             <p className="text-4xl text-white text-center p-6">
-              What might happen if either number changed while keeping the other
-              the same? Would that create more energy or less? Try making a
-              different custom wave to find out!
+              What might happen if either the height or period changed? Would
+              that create more energy or less? Try making a different custom
+              wave to find out!
             </p>
           </>
         )}
