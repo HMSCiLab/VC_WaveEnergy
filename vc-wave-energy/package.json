@@ -1,5 +1,7 @@
 {
   "name": "vc-wave-energy",
+  "author": "Robin Shindelman <roshindelman@gmail.com>",
+  "homepage": "https://www.github.com/HMSCiLab/WV_WaveEnergy",
   "private": true,
   "version": "1.0.2",
   "type": "module",
@@ -21,7 +23,6 @@
     },
     "linux": {
       "target": [
-        "AppImage",
         "deb"
       ]
     }
