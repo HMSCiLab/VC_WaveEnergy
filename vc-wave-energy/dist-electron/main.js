@@ -4634,6 +4634,7 @@ process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL ? path.join(APP_ROOT, "public") : 
 let win;
 function createWindow() {
   win = new BrowserWindow({
+    kiosk: true,
     webPreferences: {
       preload: path.join(ELECTRON_DIST, "preload.mjs")
     },

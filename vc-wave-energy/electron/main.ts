@@ -19,6 +19,7 @@ let win: BrowserWindow | null
 
 function createWindow() {
   win = new BrowserWindow({
+    kiosk: true,
     webPreferences: {
       preload: path.join(ELECTRON_DIST, 'preload.mjs'),
     },
