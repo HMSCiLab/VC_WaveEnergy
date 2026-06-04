@@ -9,7 +9,6 @@
 */
 String get_input() {
     String cmmd = Serial.readStringUntil('\n');
-    send_message("DEBUG", "get_input", NAN);
     cmmd.trim();
     return cmmd;
 }
@@ -50,5 +49,7 @@ int validator(uint16_t &user_height, uint16_t &user_period, String &input) {
 
   user_height = json_req["height"];
   user_period = json_req["period"];
+  send_message("DEBUG", "json_req height", user_height);
+  send_message("DEBUG", "json_req period", user_period);
   return 1;
 }

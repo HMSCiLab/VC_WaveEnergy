@@ -50,12 +50,11 @@ const useWaveSelector = () => {
                 height: selectedHeight.height,
                 period: selectedPeriod.period,
             };
-        if (inputValidation(waveProperties)) {
-            waveProperties.height = convertToMM(waveProperties);
-            console.log(waveProperties.height);
-            window.ipcRenderer.invoke("send-wave", waveProperties);
-            nav("/wave-read-page");
-            } 
+            if (inputValidation(waveProperties)) {
+                waveProperties.height = convertToMM(waveProperties);
+                window.ipcRenderer.invoke("send-wave", waveProperties);
+                nav("/wave-read-page");
+                } 
         }
     };
 

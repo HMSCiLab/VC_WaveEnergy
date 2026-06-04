@@ -95,6 +95,7 @@ async function tryArduinoConnection(){
       case "EOT":
         send("complete-wave", waveData);
         waveData = [];
+        console.log("main.ts >> Received EOT!");
         break;
       case "WAVEDATA":
         waveData.push(resp.data);
@@ -125,8 +126,8 @@ export function registerArduinoHandlers() {
         return { connected: !!(port && port.isOpen) }
     })
 
-    ipcMain.handle('send-wave', async(selected) => {
-        // selected -> {size: number, period: number}
+    ipcMain.handle('send-wave', async(_event, selected) => {
+        // selected -> {height: number, period: number}
         const cmmd: string = JSON.stringify(selected);
         port.write(cmmd + '\n', (err: Error | null | undefined) => {
             err 

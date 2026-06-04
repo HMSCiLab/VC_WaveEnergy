@@ -1180,6 +1180,7 @@ Data: ${resp.data}`);
         case "EOT":
           send("complete-wave", waveData);
           waveData = [];
+          console.log("main.ts >> Received EOT!");
           break;
         case "WAVEDATA":
           waveData.push(resp.data);
@@ -1205,7 +1206,7 @@ function registerArduinoHandlers() {
   ipcMain.handle("arduino-status", () => {
     return { connected: !!(port && port.isOpen) };
   });
-  ipcMain.handle("send-wave", async (selected) => {
+  ipcMain.handle("send-wave", async (_event, selected) => {
     const cmmd = JSON.stringify(selected);
     port.write(cmmd + "\n", (err) => {
       err ? console.log(`main.ts >> Error sending command to arduino: ${err}`) : console.log(`main.ts >> Sent command to arduino: ${cmmd}`);
@@ -4634,7 +4635,7 @@ process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL ? path.join(APP_ROOT, "public") : 
 let win;
 function createWindow() {
   win = new BrowserWindow({
-    kiosk: true,
+    // kiosk: true,
     webPreferences: {
       preload: path.join(ELECTRON_DIST, "preload.mjs")
     },

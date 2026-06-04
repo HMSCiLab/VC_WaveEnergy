@@ -22,6 +22,7 @@ export const usePowerMeter = () => {
   const meterMounted = useRef(true);
   const [energyVal, setEnergyVal] = useState<number>(1);
   const [showInfo, setShowInfo] = useState<boolean>(false);
+  const meterTimeoutSafetyId = useRef<NodeJS.Timeout | null>(null);
 
   const {animationNums} = computeEnergy(selectedHeight, selectedPeriod)
 
@@ -43,19 +44,36 @@ export const usePowerMeter = () => {
       1,
   );
 
+  // Manage animation reset if runtime is complete and EOT is not sent from arduino
+  const resetAnimation = (buffer: number[]) => {
+    if (meterTimeoutSafetyId.current) {
+      clearTimeout(meterTimeoutSafetyId.current);
+      meterTimeoutSafetyId.current = null;
+    }
+    setWaveData(buffer);
+    meterUpdate(0);
+    setShowInfo(true)
+  }
+
   // When waves are finished
   useEffect(() => {
       if (!meterEnergy) return;
 
+      const TIMEOUT = selectedPeriod <= 7 ? 5100 : 31000;
+      meterTimeoutSafetyId.current = setTimeout(() => {
+        resetAnimation([]);
+      }, TIMEOUT);
+
       const onWaveComplete = (_event: IpcRendererEvent, buffer: number[]) => {
-          setWaveData(buffer);
-          meterUpdate(0);
-          setShowInfo(true);
+        resetAnimation(buffer);
       };
 
       window.ipcRenderer.on("complete-wave", onWaveComplete);
       return () => {
           window.ipcRenderer.off("complete-wave", onWaveComplete);
+          if (meterTimeoutSafetyId.current){
+            clearTimeout(meterTimeoutSafetyId.current);
+          }
       };
   }, [meterEnergy]);
 
@@ -65,6 +83,7 @@ export const usePowerMeter = () => {
       return () => {
           meterMounted.current = false;
           if (rafId.current) cancelAnimationFrame(rafId.current);
+          if (meterTimeoutSafetyId.current) clearTimeout(meterTimeoutSafetyId.current);
       };
   }, []);
 
