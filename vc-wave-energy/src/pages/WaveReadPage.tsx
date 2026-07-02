@@ -43,7 +43,7 @@ function WaveReadPage() {
       <div className="flex flex-2 flex-col gap-0 justify-center items-center relative">
         <RiveMeterComponent />
         {energyVal >= 0 && (
-          <div className="pb-36 text-9xl text-white">{energyVal} watts</div>
+          <div className="pb-36 text-9xl text-white">{energyVal} kilowatts</div>
         )}
       </div>
       {/* Info box */}

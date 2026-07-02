@@ -5,28 +5,31 @@ import config from "../../config/arduino.config.json";
 
 
 export const computeEnergy = (h: number, t: number) => {
-    const instantaneousKW = (0.49 * (h ** 2) * t);
-    // 2 meter width & operating for one hour
-    const kilowattHours = instantaneousKW * 2 * 1
+    // Reduce by 85% for loss
+    const instantaneousKW = (0.49 * (h ** 2) * t) * .15;
+    // 1 meter width & operating for one hour
+    const kilowattHours = Math.min(Math.max(instantaneousKW * 1 / 1, 2), 150);
     const animationNums = new Array();
     
-    // Get ten random number +/- 10 of the instantaneous KW
+    // Get ten random number +/- 40 of the instantaneous KW
     while (animationNums.length <= 10) {
-      let num = ((Math.random() * 100) - 50) + instantaneousKW;
-      if (num > 0) animationNums.push(num)
+      let num = ((Math.random() * 40) - 10) + instantaneousKW;
+
+      if ((num > 2) && (num < 150)) animationNums.push(num)
     }
 
     return {instantaneousKW, kilowattHours, animationNums}
   }
 
 export const useWaveInfo = (nav: NavigateFunction, showInfo: boolean) => {
-  const {waveData, selectedHeight, selectedPeriod } = useAppContext();
+  const {selectedHeight, selectedPeriod } = useAppContext();
 
   const [estEnergy, setEstEnergy] = useState<number>(0);
-  const [doodad, setDoodad] = useState<string>("doodad");
+  const [doodad, setDoodad] = useState<string>("");
 
   const genInfo = () => {
     const { kilowattHours } = computeEnergy(selectedHeight, selectedPeriod);
+    console.log(kilowattHours);
     setEstEnergy(Math.round(kilowattHours));
     setDoodad(chooseDoodad(kilowattHours));
   }
@@ -43,19 +46,19 @@ export const useWaveInfo = (nav: NavigateFunction, showInfo: boolean) => {
       averageHome: "power an average house for a month" // 900kwh
     };
 
-    if (val <= 20) {
+    if (val <= 22) {
       return householdObjects.oneDryerCycle;
-    } else if (val > 20 && val < 80) {
+    } else if (val > 22 && val < 44) {
       return householdObjects.ac5hrs;
-    } else if (val > 80 && val < 100) {
+    } else if (val > 44 && val < 66) {
       return householdObjects.evCharge;
-    } else if (val > 100 && val < 200) {
+    } else if (val > 66 && val < 87) {
       return householdObjects.largeHome;
-    } else if (val > 200 && val < 400) {
+    } else if (val > 87 && val < 108) {
       return householdObjects.smallApartmet;
-    } else if (val > 400 && val < 600) {
+    } else if (val > 108 && val < 129) {
       return householdObjects.vacuumCleaner;
-    } else if (val > 600 && val < 900) {
+    } else if (val > 129 && val < 150) {
       return householdObjects.spaceHeater;
     } else {
       return householdObjects.averageHome;
@@ -64,15 +67,14 @@ export const useWaveInfo = (nav: NavigateFunction, showInfo: boolean) => {
 
   // Show info and manage the countdown
   useEffect(() => {
-    if (!(showInfo && waveData.length > 0)) return;
+    if (!(showInfo)) return;
     genInfo();
-
     const timeout = setTimeout(() => {
       nav("/");
     }, config.time_to_read_info * 1000);
 
     return () => clearTimeout(timeout);
-  }, [showInfo, waveData, nav]);
+  }, [showInfo, nav]);
 
   return { estEnergy, doodad }
 };

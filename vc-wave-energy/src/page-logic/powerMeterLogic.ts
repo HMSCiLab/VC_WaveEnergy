@@ -8,7 +8,7 @@ import {
   useStateMachineInput,
   StateMachineInput,
 } from "@rive-app/react-canvas";
-import powerMeter from "../assets/power_meter.riv"
+import powerMeter from "../assets/power_meter1_150.riv"
 import { useAppContext } from "../AppContext";
 import { computeEnergy } from "./waveInfoLogic";
 
