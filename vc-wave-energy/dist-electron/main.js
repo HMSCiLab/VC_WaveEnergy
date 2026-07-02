@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 import fs from "node:fs";
 import { createRequire } from "node:module";
 import { spawn } from "child_process";
-import fs$1 from "fs";
+import fs$1, { promises } from "fs";
 import path$1 from "path";
 const __filename$1 = fileURLToPath(import.meta.url);
 const __dirname$1 = path.dirname(__filename$1);
@@ -4611,16 +4611,27 @@ const refreshData = async () => {
   });
   proc.on("close", async (code) => {
     if (code === 0) {
-      await fs$1.rename(tempFile, USER_DATA_FILE, (err) => {
-        if (err) throw err;
+      try {
+        if (!fs$1.existsSync(USER_DATA_DIR)) {
+          fs$1.mkdirSync(USER_DATA_DIR, { recursive: true });
+        }
+        await promises.rename(tempFile, USER_DATA_FILE);
         console.log("main.ts >> Data transfer complete");
-      });
+      } catch (err) {
+        console.log("main.ts >> failed to move temp file: ", err);
+      }
     } else {
       console.error(`main.ts >> scp failed with code -- ${code}`);
     }
   });
 };
 const getDriveData = async () => {
+  if (!fs$1.existsSync(USER_DATA_FILE)) {
+    if (!fs$1.existsSync(USER_DATA_DIR)) {
+      fs$1.mkdirSync(USER_DATA_DIR, { recursive: true });
+    }
+    refreshData();
+  }
   const raw_json = fs$1.readFileSync(USER_DATA_FILE, "utf-8");
   const json = JSON.parse(raw_json);
   return normalizeData(json);

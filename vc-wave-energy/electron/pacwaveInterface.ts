@@ -1,5 +1,6 @@
 import { spawn } from "child_process";
 import fs from "fs"
+import { promises as fsPromises } from "fs";
 import path from "path";
 
 import { USER_DATA_FILE, USER_DATA_DIR } from './paths';
@@ -26,10 +27,15 @@ export const refreshData = async () => {
     // Success? Try to transfer
     proc.on("close", async code => {
         if (code === 0){
-            await fs.rename(tempFile, USER_DATA_FILE, (err) => {
-                if (err) throw err;
+            try {
+                if (!fs.existsSync(USER_DATA_DIR)) {
+                    fs.mkdirSync(USER_DATA_DIR, {recursive: true});
+                }
+                await fsPromises.rename(tempFile, USER_DATA_FILE)
                 console.log('main.ts >> Data transfer complete');
-            });
+            } catch (err) {
+                console.log("main.ts >> failed to move temp file: ", err);
+            };
         }
         else {
             console.error(`main.ts >> scp failed with code -- ${code}`);
@@ -38,6 +44,14 @@ export const refreshData = async () => {
 }
 
 const getDriveData = async (): Promise<BuoyDataParseResult> => {
+    // Make sure file exists
+    if (!fs.existsSync(USER_DATA_FILE)) {
+        if (!fs.existsSync(USER_DATA_DIR)) {
+            fs.mkdirSync(USER_DATA_DIR, {recursive: true});
+        }
+        refreshData();
+    }
+
     const raw_json = fs.readFileSync(USER_DATA_FILE, 'utf-8');
     const json = JSON.parse(raw_json);
     return normalizeData(json);
