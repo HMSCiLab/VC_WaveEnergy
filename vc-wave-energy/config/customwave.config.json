@@ -1,18 +1,18 @@
 {
     "height_selection_options": [
-    { "height": 1.0},
-    { "height": 3.0},
-    { "height": 5.0},
-    { "height": 7.00},
-    { "height": 9.0},
+    { "height": 2.0},
+    { "height": 4.0},
+    { "height": 6.0},
+    { "height": 8.00},
+    { "height": 10.0},
     { "height": 12.0}
   ],
   "period_selection_options": [
     {"period": 3.0},
-    {"period": 5.0},
-    {"period": 7.0},
+    {"period": 6.0},
     {"period": 9.0},
     {"period": 11.0},
+    {"period": 12.0},
     {"period": 14.0}
   ]
 }
