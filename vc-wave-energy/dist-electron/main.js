@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 import fs from "node:fs";
 import { createRequire } from "node:module";
 import { spawn } from "child_process";
-import fs$1, { promises } from "fs";
+import fs$1 from "fs";
 import path$1 from "path";
 const __filename$1 = fileURLToPath(import.meta.url);
 const __dirname$1 = path.dirname(__filename$1);
@@ -4599,42 +4599,40 @@ const normalizeData = (rawData) => {
   }
   return { success: true, data: parsedData.data, err: null };
 };
-const refreshData = async () => {
+const refreshData = () => {
   const tempFile = path$1.join(USER_DATA_DIR, "waverider.tmp");
   const remoteFile = [REMOTE_HOST, ":", REMOTE_FILE].join("");
+  console.log(`main.ts >> cmmd = scp ${remoteFile} ${tempFile}`);
   const proc = spawn("scp", [remoteFile, tempFile]);
-  proc.stdout.on("data", (data) => {
-    console.log(data.toString());
-  });
   proc.stderr.on("data", (data) => {
     console.error(data.toString());
   });
-  proc.on("close", async (code) => {
+  proc.on("close", (code) => {
     if (code === 0) {
-      try {
-        if (!fs$1.existsSync(USER_DATA_DIR)) {
-          fs$1.mkdirSync(USER_DATA_DIR, { recursive: true });
-        }
-        await promises.rename(tempFile, USER_DATA_FILE);
+      fs$1.rename(tempFile, USER_DATA_FILE, (err) => {
+        if (err) throw err;
         console.log("main.ts >> Data transfer complete");
-      } catch (err) {
-        console.log("main.ts >> failed to move temp file: ", err);
-      }
+      });
     } else {
       console.error(`main.ts >> scp failed with code -- ${code}`);
     }
   });
 };
-const getDriveData = async () => {
-  if (!fs$1.existsSync(USER_DATA_FILE)) {
-    if (!fs$1.existsSync(USER_DATA_DIR)) {
-      fs$1.mkdirSync(USER_DATA_DIR, { recursive: true });
-    }
-    refreshData();
-  }
+const getDriveData = () => {
+  ensureFileExists(USER_DATA_FILE);
   const raw_json = fs$1.readFileSync(USER_DATA_FILE, "utf-8");
   const json = JSON.parse(raw_json);
   return normalizeData(json);
+};
+const ensureFileExists = (filePath) => {
+  const dirname = path$1.dirname(filePath);
+  console.log(`main.ts >> ensuring ${dirname} exists`);
+  if (!fs$1.existsSync(dirname)) {
+    fs$1.mkdirSync(dirname, { recursive: true });
+  }
+  if (!fs$1.existsSync(filePath)) {
+    fs$1.writeFileSync(filePath, JSON.stringify({}), "utf-8");
+  }
 };
 function registerPacWaveHandlers() {
   ipcMain.handle("get-drive-data", getDriveData);
