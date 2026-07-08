@@ -32,7 +32,7 @@ function WaveSelectorPage() {
       <div className="flex flex-col flex-1">
         {/* Slider */}
         <div className="flex flex-1 gap-8 items-center justify-center">
-          <div className="flex flex-1 h-full">
+          <div className="flex flex-1 h-full pb-1">
             <RiveSlider
               rivFile={heightSlider}
               onSelectionChange={setActiveHeightIndex}
