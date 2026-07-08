@@ -16,7 +16,7 @@ function LearnPage1Copy() {
         <img src={heightChart} className="max-h-full max-w-full" />
       </div>
       <p className="text-white text-4xl pt-5">
-        <u>Period</u>: Time between the crest or trough of two waves in a set.
+        <u>Period</u>: Time between the crest of two waves in a set.
       </p>
       <div className="h-[300px] w-[900px] flex items-center justify-center">
         <img src={periodChart} className="max-h-full max-w-full" />
