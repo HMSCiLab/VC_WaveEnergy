@@ -3,6 +3,12 @@ import { NavigateFunction } from "react-router-dom";
 import { useAppContext } from "../AppContext";
 import config from "../../config/arduino.config.json";
 
+type doodadInfo = {
+  doodadPrefix: string,
+  doodadObject: string,
+  doodadMin: number,
+  doodadMax: number
+}
 
 export const computeEnergy = (h: number, t: number) => {
     // Reduce by 85% for loss
@@ -25,44 +31,93 @@ export const useWaveInfo = (nav: NavigateFunction, showInfo: boolean) => {
   const {selectedHeight, selectedPeriod } = useAppContext();
 
   const [estEnergy, setEstEnergy] = useState<number>(0);
-  const [doodad, setDoodad] = useState<string>("");
+  const [doodadName, setDoodadName] = useState<string>("");
+  const [doodadPrefix, setDoodadPrefix] = useState<string>("");
+  const [minNumDoodads, setMinNumDoodads] = useState<number>(0);
+  const [maxNumDoodads, setMaxNumDoodads] = useState<number>(0);
 
   const genInfo = () => {
     const { kilowattHours } = computeEnergy(selectedHeight, selectedPeriod);
     console.log(kilowattHours);
     setEstEnergy(Math.round(kilowattHours));
-    setDoodad(chooseDoodad(kilowattHours));
+    const doodadInfo = chooseDoodad(kilowattHours);
+    setDoodadName(doodadInfo.doodadObject);
+    setDoodadPrefix(doodadInfo.doodadPrefix);
+    setMinNumDoodads(doodadInfo.doodadMin);
+    setMaxNumDoodads(doodadInfo.doodadMax);
   }
 
-  const chooseDoodad = (val: number) => {
-    const householdObjects = {
-      oneDryerCycle: "power a single cycle of a clothes dryer", // 1kwh
-      ac5hrs: "power A/C for 5 hours", // 20kwh
-      evCharge: "fully charge an EV", // 80kwh
-      largeHome: "power a large home for 3 days", // 100kwh
-      smallApartmet: "power a small apartment for a month", // 200kwh
-      vacuumCleaner: "power a vacuum cleaner for 400 hours", // 400kwh
-      spaceHeater: "power a space heater for 25 days", // 600kwh
-      averageHome: "power an average house for a month" // 900kwh
+  const chooseDoodad = (val: number): doodadInfo => {
+    let doodadPrefix = ""
+    let doodadObject = ""
+    let doodadMin = 0
+    let doodadMax = 0
+
+    const prefix = {
+      dishwasher: "to complete",
+      dryer: "to complete",
+      refrigerator: "to power a refrigerator for",
+      ac: "to power",
+      house: "to power the average house for"
+    }
+
+    const object = {
+      dishwasher: "loads in a dishwasher",
+      dryer: "cycles of a clothes dryer",
+      refrigerator: "days",
+      ac: "hours of air conditioning",
+      house: "days"
     };
 
-    if (val <= 22) {
-      return householdObjects.oneDryerCycle;
-    } else if (val > 22 && val < 44) {
-      return householdObjects.ac5hrs;
-    } else if (val > 44 && val < 66) {
-      return householdObjects.evCharge;
-    } else if (val > 66 && val < 87) {
-      return householdObjects.largeHome;
-    } else if (val > 87 && val < 108) {
-      return householdObjects.smallApartmet;
-    } else if (val > 108 && val < 129) {
-      return householdObjects.vacuumCleaner;
-    } else if (val > 129 && val < 150) {
-      return householdObjects.spaceHeater;
-    } else {
-      return householdObjects.averageHome;
+    const rangeMin = {
+      dishwasher: 1,
+      dryer: 30,
+      refrigerator: 6,
+      ac: 23,
+      house: 4 
     }
+
+    const rangeMax = {
+      dishwasher: 17,
+      dryer: 60,
+      refrigerator: 9,
+      ac: 30,
+      house: 5 
+    }
+
+    if (val <= 30) {
+      doodadPrefix = prefix.dishwasher
+      doodadObject = object.dishwasher
+      doodadMin = rangeMin.dishwasher
+      doodadMax = rangeMax.dishwasher
+    } else if (val > 30 && val <= 60) {
+      doodadPrefix = prefix.dryer
+      doodadObject = object.dryer
+      doodadMin = rangeMin.dryer
+      doodadMax = rangeMax.dryer
+    } else if (val > 60 && val <= 90) {
+      doodadPrefix = prefix.refrigerator
+      doodadObject = object.refrigerator
+      doodadMin = rangeMin.refrigerator
+      doodadMax = rangeMax.refrigerator
+    } else if (val > 90 && val <= 120) {
+      doodadPrefix = prefix.ac
+      doodadObject = object.ac
+      doodadMin = rangeMin.ac
+      doodadMax = rangeMax.ac
+    } else if (val > 120 && val <= 150) {
+      doodadPrefix = prefix.house
+      doodadObject = object.house
+      doodadMin = rangeMin.house
+      doodadMax = rangeMax.house
+    } else {
+      doodadPrefix = prefix.dishwasher
+      doodadObject = object.dishwasher
+      doodadMin = rangeMin.dishwasher
+      doodadMax = rangeMax.dishwasher
+    }
+
+    return {doodadPrefix, doodadObject, doodadMin, doodadMax}
   }
 
   // Show info and manage the countdown
@@ -76,5 +131,5 @@ export const useWaveInfo = (nav: NavigateFunction, showInfo: boolean) => {
     return () => clearTimeout(timeout);
   }, [showInfo, nav]);
 
-  return { estEnergy, doodad }
+  return { estEnergy, doodadName, doodadPrefix, minNumDoodads, maxNumDoodads }
 };

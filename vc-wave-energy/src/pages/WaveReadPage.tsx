@@ -14,7 +14,8 @@ function WaveReadPage() {
     usePowerMeter();
 
   // Wave info
-  const { estEnergy, doodad } = useWaveInfo(navigate, showInfo);
+  const { estEnergy, doodadName, doodadPrefix, minNumDoodads, maxNumDoodads } =
+    useWaveInfo(navigate, showInfo);
 
   return (
     // Main Container
@@ -59,7 +60,8 @@ function WaveReadPage() {
               If scaled to its true ocean size of {selectedHeight}{" "}
               {selectedHeight > 1 ? "feet" : "foot"} with a period of{" "}
               {selectedPeriod} seconds, that set of waves would have generated{" "}
-              {estEnergy} kilowatt-hours. That's enough to {doodad}!
+              {estEnergy} kilowatt-hours. That's enough {doodadPrefix}{" "}
+              {minNumDoodads} to {maxNumDoodads} {doodadName}!
             </p>
             <p className="text-4xl text-white text-center p-6">
               What might happen if either the height or period changed? Would
