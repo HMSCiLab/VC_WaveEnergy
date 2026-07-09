@@ -68,12 +68,16 @@ function RiveSlider({ rivFile, onSelectionChange }: Props) {
     } else {
       rive.setTextRunValue(
         "periodLabel1",
-        `${periodOptions[2].period} seconds`,
+        `${periodOptions[0].period} seconds`,
       );
       rive.setTextRunValue(
         "periodLabel2",
-        `${periodOptions[4].period} seconds`,
+        `${periodOptions[2].period} seconds`,
       );
+      rive.setTextRunValue(
+        "periodLabel3",
+        `${periodOptions[4].period} seconds`
+      )
     }
   }, [rive]);
 
