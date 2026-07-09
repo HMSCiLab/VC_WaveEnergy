@@ -4603,9 +4603,11 @@ const refreshData = () => {
   const tempFile = path$1.join(USER_DATA_DIR, "waverider.tmp");
   const remoteFile = [REMOTE_HOST, ":", REMOTE_FILE].join("");
   console.log(`main.ts >> cmmd = scp ${remoteFile} ${tempFile}`);
+  const fetchIntervalID = setInterval(() => console.log("main.ts >> fetching data"), 1e3);
   const proc = spawn("scp", [remoteFile, tempFile]);
   proc.stderr.on("data", (data) => {
     console.error(data.toString());
+    clearInterval(fetchIntervalID);
   });
   proc.on("close", (code) => {
     if (code === 0) {
@@ -4616,6 +4618,7 @@ const refreshData = () => {
     } else {
       console.error(`main.ts >> scp failed with code -- ${code}`);
     }
+    clearInterval(fetchIntervalID);
   });
 };
 const getDriveData = () => {
@@ -4632,6 +4635,7 @@ const ensureFileExists = (filePath) => {
   }
   if (!fs$1.existsSync(filePath)) {
     fs$1.writeFileSync(filePath, JSON.stringify({}), "utf-8");
+    refreshData();
   }
 };
 function registerPacWaveHandlers() {
