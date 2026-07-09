@@ -3,7 +3,7 @@
   "author": "Robin Shindelman <roshindelman@gmail.com>",
   "homepage": "https://www.github.com/HMSCiLab/WV_WaveEnergy",
   "private": true,
-  "version": "1.0.4",
+  "version": "1.0.5",
   "type": "module",
   "build": {
     "appId": "com.hmscilab.vcwaveenergy",
