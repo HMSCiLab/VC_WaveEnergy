@@ -13,13 +13,11 @@ export const refreshData = () => {
     const tempFile = path.join(USER_DATA_DIR, "waverider.tmp");
     const remoteFile = [REMOTE_HOST, ":", REMOTE_FILE].join('');
     console.log(`main.ts >> cmmd = scp ${remoteFile} ${tempFile}`);
-    const fetchIntervalID = setInterval(() => console.log("main.ts >> fetching data"), 1000);
     const proc = spawn("scp", [remoteFile, tempFile]);
     
     // Error?
     proc.stderr.on("data", data => {
         console.error(data.toString());
-        clearInterval(fetchIntervalID);
     })
 
     // Success? Try to transfer
@@ -33,7 +31,6 @@ export const refreshData = () => {
         else {
             console.error(`main.ts >> scp failed with code -- ${code}`);
         }
-        clearInterval(fetchIntervalID);
     })
 }
 

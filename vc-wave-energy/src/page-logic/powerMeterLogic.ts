@@ -24,7 +24,7 @@ export const usePowerMeter = () => {
   const [showInfo, setShowInfo] = useState<boolean>(false);
   const meterTimeoutSafetyId = useRef<NodeJS.Timeout | null>(null);
 
-  const {animationNums} = computeEnergy(selectedHeight, selectedPeriod)
+  const {animationNums, kilowattHours} = computeEnergy(selectedHeight, selectedPeriod)
 
   const { rive: riveMeter, RiveComponent: RiveMeterComponent } = useRive({
       src: powerMeter,
@@ -51,7 +51,7 @@ export const usePowerMeter = () => {
       meterTimeoutSafetyId.current = null;
     }
     setWaveData(buffer);
-    meterUpdate(0);
+    meterUpdate(kilowattHours);
     setShowInfo(true)
   }
 

@@ -29,7 +29,7 @@ function RiveSlider({ rivFile, onSelectionChange }: Props) {
     }),
   });
 
-  const viewModel = useViewModel(rive, { name: "View Model 1" });
+  const viewModel = useViewModel(rive, { name: "ViewModel1" });
   const vmi = useViewModelInstance(viewModel, { rive });
 
   const { value: selection1 } = useViewModelInstanceBoolean("selection1", vmi);
@@ -55,12 +55,13 @@ function RiveSlider({ rivFile, onSelectionChange }: Props) {
 
   useEffect(() => {
     onSelectionChange?.(activeIndex);
+    console.log(activeIndex);
   }, [activeIndex, onSelectionChange]);
 
   // Set text labels
   useEffect(() => {
     if (!rive) return;
-    
+
     if (rivFile.includes("height")) {
       rive.setTextRunValue("heightLabel1", `${heightOptions[1].height} feet`);
       rive.setTextRunValue("heightLabel2", `${heightOptions[3].height} feet`);
@@ -76,8 +77,8 @@ function RiveSlider({ rivFile, onSelectionChange }: Props) {
       );
       rive.setTextRunValue(
         "periodLabel3",
-        `${periodOptions[4].period} seconds`
-      )
+        `${periodOptions[4].period} seconds`,
+      );
     }
   }, [rive]);
 

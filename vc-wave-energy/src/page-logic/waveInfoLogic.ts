@@ -38,7 +38,6 @@ export const useWaveInfo = (nav: NavigateFunction, showInfo: boolean) => {
 
   const genInfo = () => {
     const { kilowattHours } = computeEnergy(selectedHeight, selectedPeriod);
-    console.log(kilowattHours);
     setEstEnergy(Math.round(kilowattHours));
     const doodadInfo = chooseDoodad(kilowattHours);
     setDoodadName(doodadInfo.doodadObject);
