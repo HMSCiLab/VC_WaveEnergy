@@ -3,7 +3,7 @@ import periodChart from "../assets/periodChart-3.svg";
 
 function LearnPage1Copy() {
   return (
-    <div className="flex flex-col justify-start gap-8">
+    <div className="flex flex-col justify-start gap-2">
       <p className="text-white text-4xl">
         The terms <u>height</u> and <u>period</u> are often used to describe
         ocean waves. The value of each of these properties will determine the

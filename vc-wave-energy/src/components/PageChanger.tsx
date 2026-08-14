@@ -5,7 +5,7 @@ function PageChanger() {
   const { pageNumber, changeRight, changeLeft } = usePageChangeLogic();
 
   return (
-    <div className="flex flex-row ml-auto items-center justify-end">
+    <div className="flex flex-row ml-auto mt-auto pb-2 items-center justify-end">
       <button className={`${pageNumber === "2" ? "visible" : "invisible" }`} onClick={changeLeft}>
         <ArrowLeftIcon className="text-white size-20" />
       </button>
