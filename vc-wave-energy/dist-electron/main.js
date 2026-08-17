@@ -1177,6 +1177,10 @@ async function tryArduinoConnection() {
 Message:${resp.mssg}
 Data: ${resp.data}`);
           break;
+        case "SOT":
+          send("start-wave");
+          console.log("main.ts >> Received SOT!");
+          break;
         case "EOT":
           send("complete-wave", waveData);
           waveData = [];

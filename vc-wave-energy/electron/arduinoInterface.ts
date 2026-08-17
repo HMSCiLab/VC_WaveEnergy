@@ -92,6 +92,10 @@ async function tryArduinoConnection(){
       case "DEBUG":
         console.log(`Channel: ${resp.channel}\nMessage:${resp.mssg}\nData: ${resp.data}`);
         break;
+      case "SOT":
+        send("start-wave");
+        console.log("main.ts >> Received SOT!");
+        break;
       case "EOT":
         send("complete-wave", waveData);
         waveData = [];

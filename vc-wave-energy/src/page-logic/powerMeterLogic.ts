@@ -23,6 +23,7 @@ export const usePowerMeter = () => {
   const [energyVal, setEnergyVal] = useState<number>(1);
   const [showInfo, setShowInfo] = useState<boolean>(false);
   const meterTimeoutSafetyId = useRef<NodeJS.Timeout | null>(null);
+  const [startWave, setStartWave] = useState<boolean>(false);
 
   const {animationNums, kilowattHours} = computeEnergy(selectedHeight, selectedPeriod)
 
@@ -59,7 +60,7 @@ export const usePowerMeter = () => {
   useEffect(() => {
       if (!meterEnergy) return;
 
-      const TIMEOUT = selectedPeriod <= 7 ? 5100 : 31000;
+      const TIMEOUT = 31000;
       meterTimeoutSafetyId.current = setTimeout(() => {
         resetAnimation([]);
       }, TIMEOUT);
@@ -87,7 +88,16 @@ export const usePowerMeter = () => {
       };
   }, []);
 
+  // Set start wave gate
   useEffect(() => {
+    window.ipcRenderer.on("start-wave", () => {
+      console.log("got SOT!");
+      setStartWave(true);
+    })
+  })
+
+  useEffect(() => {
+    if (!startWave) return
     if (!animationNums || animationNums.length === 0) return
     if (showInfo) return
 
