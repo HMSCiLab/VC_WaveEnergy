@@ -16,6 +16,10 @@ electron.contextBridge.exposeInMainWorld("ipcRenderer", {
   invoke(...args) {
     const [channel, ...omit] = args;
     return electron.ipcRenderer.invoke(channel, ...omit);
+  },
+  once(...args) {
+    const [channel, ...omit] = args;
+    return electron.ipcRenderer.once(channel, ...omit);
   }
 });
 const PACWAVE_API = {

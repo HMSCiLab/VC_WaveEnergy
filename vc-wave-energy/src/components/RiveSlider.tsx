@@ -55,7 +55,6 @@ function RiveSlider({ rivFile, onSelectionChange }: Props) {
 
   useEffect(() => {
     onSelectionChange?.(activeIndex);
-    console.log(activeIndex);
   }, [activeIndex, onSelectionChange]);
 
   // Set text labels

@@ -90,11 +90,17 @@ export const usePowerMeter = () => {
 
   // Set start wave gate
   useEffect(() => {
-    window.ipcRenderer.on("start-wave", () => {
+    const onStartWave = () => {
       console.log("got SOT!");
       setStartWave(true);
-    })
-  })
+    }
+
+    window.ipcRenderer.once("start-wave", onStartWave);
+
+    return () => {
+      window.ipcRenderer.off("start-wave", onStartWave);
+    }
+  }, [])
 
   useEffect(() => {
     if (!startWave) return
@@ -104,7 +110,6 @@ export const usePowerMeter = () => {
     let i = 0
     const meterIntervalId = setInterval(() => {
       if (i < animationNums.length) {
-        console.log(i)
         meterUpdate(animationNums[i])
         i++
       } 
