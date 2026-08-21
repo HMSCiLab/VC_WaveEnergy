@@ -5,8 +5,10 @@
 #include "src/interface.h"
 #include "src/paddle.h"
 
+void go_to_limit_C();
 
-void setup() {
+void setup() 
+{
   Serial.begin(9600);
   
   // PADDLE PWM/ENABLE/DIRECTION
@@ -20,6 +22,9 @@ void setup() {
   pinMode(config::LIMIT_SWITCH_A, INPUT);
   pinMode(config::LIMIT_SWITCH_B, INPUT);
   pinMode(config::LIMIT_SWITCH_C, INPUT);
+  
+  // If for any reason the system reboots return Home
+  go_to_limit_C();
 }
 
 void loop() {
@@ -30,3 +35,6 @@ void loop() {
     generate_wave(user_height, user_period);   // Real life
   }
 }
+
+
+

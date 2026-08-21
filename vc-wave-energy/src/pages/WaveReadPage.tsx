@@ -14,7 +14,7 @@ function WaveReadPage() {
     usePowerMeter();
 
   // Wave info
-  const { estEnergy, doodadName, doodadPrefix, doodadNumber} =
+  const { estEnergy, doodadName, doodadPrefix, minNumDoodads, maxNumDoodads } =
     useWaveInfo(navigate, showInfo);
 
   return (
@@ -61,7 +61,7 @@ function WaveReadPage() {
               {selectedHeight > 1 ? "feet" : "foot"} with a period of{" "}
               {selectedPeriod} seconds, that set of waves would have generated{" "}
               {estEnergy} kilowatt-hours. That's enough {doodadPrefix}{" "}
-              {doodadNumber} {doodadName}!
+              {minNumDoodads} to {maxNumDoodads} {doodadName}!
             </p>
             <p className="text-4xl text-white text-center p-6">
               What might happen if either the height or period changed? Would

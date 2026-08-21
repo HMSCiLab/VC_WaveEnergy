@@ -7,6 +7,8 @@
 #include "paddle.h"
 #include "interface.h"
 
+volatile bool motor_should_stop = false;
+
 /*
 * 310mm -> 1ft -> 300hz -> smallest wave
 * 920mm -> 3ft
@@ -53,33 +55,104 @@ uint16_t compute_power(uint16_t user_height, uint16_t user_period) {
   return constrain(power, 0, 100);  // Send something back between 0 & 100
 }
 
-void go_to_limit_C(){
-  while (digitalRead(config::LIMIT_SWITCH_C) == HIGH) {
-    // Direction forward & motor on
-    digitalWrite(config::MOTOR_DIRECTION_PIN, LOW);
-    delayMicroseconds(5); // Driver setup time
+void go_to_limit_C()
+{ 
+   if (digitalRead(config::LIMIT_SWITCH_C) == HIGH) 
+  {
+    // From current possition, send the motor back to Home (Limit C)
     digitalWrite(config::MOTOR_ENABLE_PIN, HIGH);
+    digitalWrite(config::MOTOR_DIRECTION_PIN, config::motor_reverse); 
     delay(5); // Driver setup time
-    tone(config::MOTOR_STEP_PIN, 400);
+    tone(config::MOTOR_STEP_PIN, 100); // move slowly
+    while (digitalRead(config::LIMIT_SWITCH_C) == HIGH);
   }
   noTone(config::MOTOR_STEP_PIN);
+  digitalWrite(config::MOTOR_ENABLE_PIN, LOW); // set to HIGH if you want to hold the motor
+}
+
+void go_to_limit_B()
+{
+  // From current possition, move forward until either limit B (center) or limit A (front) is reached
+  //If limit A is reached reverse direction and move back to limit B
+  digitalWrite(config::MOTOR_ENABLE_PIN, HIGH);
+  digitalWrite(config::MOTOR_DIRECTION_PIN, config::motor_forward); 
+  delay(5); // Driver setup time
+  tone(config::MOTOR_STEP_PIN, 100); // move slowley
+  while ((digitalRead(config::LIMIT_SWITCH_B) == HIGH) && (digitalRead(config::LIMIT_SWITCH_A) == HIGH));
+  noTone(config::MOTOR_STEP_PIN); 
+  if (digitalRead(config::LIMIT_SWITCH_A) == LOW)
+  {
+    digitalWrite(config::MOTOR_DIRECTION_PIN, config::motor_reverse); 
+    delay(5); // Driver setup time
+    tone(config::MOTOR_STEP_PIN, 100); // move slowly
+    while (digitalRead(config::LIMIT_SWITCH_B) == HIGH);
+    noTone(config::MOTOR_STEP_PIN);
+  }
   digitalWrite(config::MOTOR_ENABLE_PIN, LOW);
   delay(5);
 }
 
-void go_to_limit_B(){
-  while (digitalRead(config::LIMIT_SWITCH_B) == HIGH) {
-    // Direction backward & motor on
-    digitalWrite(config::MOTOR_DIRECTION_PIN, HIGH);
-    delayMicroseconds(5); // Driver setup time
-    digitalWrite(config::MOTOR_ENABLE_PIN, HIGH);
-    delay(5); // Driver setup time
-    tone(config::MOTOR_STEP_PIN, 400);
-  }
-  noTone(config::MOTOR_STEP_PIN);
-  digitalWrite(config::MOTOR_ENABLE_PIN, LOW);
-  delay(5);
+void runTrapezoid(uint16_t period_ms, uint16_t height_hz)
+{
+    if (period_ms == 0 || height_hz == 0)
+    {
+        return;
+    }
 
+    uint32_t strokeMicros = (period_ms / 2) * 1000UL; // divide the period in half and make microseconds (us)
+    uint32_t phaseDuration = strokeMicros / 3; // 1/3 split: Accel, Coast, Decel
+    const float startHz = 50.0; // Starting pulse speed
+    const float endHz   = 25.0; // Ending pulse speed before stop
+    const uint16_t HIGH_TIME_US = 10; // Fixed 10us HIGH pulse width determined by motor controller
+
+    uint32_t elapsedMicros = 0;
+
+    while (elapsedMicros < strokeMicros)
+    {
+        float currentHz = startHz;
+
+        // Phase 1: Ramp Up (0 to 1/3 stroke duration)
+        if (elapsedMicros < phaseDuration)
+        {
+            float progress = (float)elapsedMicros / phaseDuration;
+            currentHz = startHz + (height_hz - startHz) * progress;
+        }
+        // Phase 2: Coast (1/3 to 2/3 stroke duration)
+        else if (elapsedMicros < (phaseDuration * 2))
+        {
+            currentHz = height_hz;
+        }
+        // Phase 3: Ramp Down (2/3 to 3/3 stroke duration)
+        else
+        {
+            uint32_t decelElapsed = elapsedMicros - (phaseDuration * 2);
+            float progress = (float)decelElapsed / phaseDuration;
+            currentHz = height_hz - (height_hz - endHz) * progress;
+        }
+
+        // Calculate step period
+        uint32_t stepPeriodUs = (uint32_t)(1000000.0 / currentHz);
+        
+        // Calculate LOW duration
+        uint32_t lowTimeUs;
+        if (stepPeriodUs > HIGH_TIME_US)
+        {
+            lowTimeUs = stepPeriodUs - HIGH_TIME_US;
+        }
+        else
+        {
+            lowTimeUs = 1;
+        }
+
+        // --- Output 10us Step Pulse ---
+        digitalWrite(config::MOTOR_STEP_PIN, HIGH);
+        delayMicroseconds(HIGH_TIME_US);
+        digitalWrite(config::MOTOR_STEP_PIN, LOW);
+        delayMicroseconds(lowTimeUs);
+
+        // Track time execution
+        elapsedMicros += (HIGH_TIME_US + lowTimeUs);
+    }
 }
 
 /*
@@ -88,7 +161,8 @@ void go_to_limit_B(){
 * on the system defined run time (see src/config.h) and
 * the user defined period.
 */
-void generate_wave(uint16_t user_height, uint16_t user_period) {
+void generate_wave(uint16_t user_height, uint16_t user_period) 
+ {
   if (user_period <= 0) return;
   if (user_height <= 0) return;
 
@@ -100,45 +174,38 @@ void generate_wave(uint16_t user_height, uint16_t user_period) {
   // Run time divided by input period in ms.
   long num_waves = (long)(config::LONG_PERIOD_RUN_TIME / period_ms) / 2;
 
-  // Go to start, if short period, go to middle.
   go_to_limit_C();
-  if (period_ms < 1000) {
+  if (period_ms < 1000) 
+  {
     go_to_limit_B();
     num_waves = (long)(config::SHORT_PERIOD_RUN_TIME / period_ms) / 2;
   }
 
   // Generate n waves
-  for (int n=0; n < num_waves; n++){
-    // Paddle at the start position (A)
-    // Direction forward & motor on
-    digitalWrite(config::MOTOR_DIRECTION_PIN, HIGH);
-    delayMicroseconds(5); // Driver setup time
-    digitalWrite(config::MOTOR_ENABLE_PIN, HIGH);
-    delay(5); // Driver setup time
-    tone(config::MOTOR_STEP_PIN, height_hz);
-    delay(period_ms / 2);
-    noTone(config::MOTOR_STEP_PIN);
-    
-    // Go half period and stop
-    digitalWrite(config::MOTOR_ENABLE_PIN, LOW);
+  send_message("SOT", "", NAN);
+  digitalWrite(config::MOTOR_ENABLE_PIN, HIGH);
+  for (int n = 0; n < num_waves; n++)
+  {
+    //Paddle at the start position (B or C)
+  
+    //1. Move Forward
+    digitalWrite (config::MOTOR_DIRECTION_PIN, config::motor_forward);
+    runTrapezoid(period_ms, height_hz);
+
+    // Mechanical settling dwell
     delay(5);
 
-    // Return to start
-    digitalWrite(config::MOTOR_DIRECTION_PIN, LOW);
-    delayMicroseconds(5);
-    digitalWrite(config::MOTOR_ENABLE_PIN, HIGH);
-    delay(5);
-    tone(config::MOTOR_STEP_PIN, height_hz);
-    delay(period_ms / 2);
-    noTone(config::MOTOR_STEP_PIN);
+    // 2. Move Reverse 
+    digitalWrite (config::MOTOR_DIRECTION_PIN, config::motor_reverse);
+    runTrapezoid(period_ms, height_hz);
 
-    digitalWrite(config::MOTOR_ENABLE_PIN, LOW);
+    // Mechanical settling dwell
     delay(5);
-
-    // TODO: FIGURE OUT SOME KIND OF ACTUAL ENERGY CREATION FEEDBACK
-    int variation = random(0, 100);
-    send_message("WAVEDATA", "", variation);
   }
+
+  digitalWrite(config::MOTOR_ENABLE_PIN, LOW);
   send_message("EOT", "", NAN);
+
+  // Return the paddle to "Home"
   go_to_limit_C();
 }

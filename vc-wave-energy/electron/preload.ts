@@ -18,10 +18,6 @@ contextBridge.exposeInMainWorld('ipcRenderer', {
     const [channel, ...omit] = args
     return ipcRenderer.invoke(channel, ...omit)
   },
-  once(...args: Parameters<typeof ipcRenderer.once>) {
-    const [channel, ...omit] = args
-    return ipcRenderer.once(channel, ...omit)
-  }
 })
 
 const PACWAVE_API = {
