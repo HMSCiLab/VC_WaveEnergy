@@ -1,0 +1,22 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+@import "tailwindcss";
+
+:root {
+    --circle-dur: 45s;  /* Default time to read wave information page */
+    --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+}
+
+@theme {
+    --color-coastal-blue-light: #89c2d9;
+    --default-font-family: var(--font-sans);
+}
+
+@keyframes drawCircle {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.animate-draw {
+  animation: drawCircle var(--circle-dur) linear forwards;
+}

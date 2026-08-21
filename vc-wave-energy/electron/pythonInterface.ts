@@ -1,0 +1,75 @@
+import { request, setGlobalDispatcher, Agent } from 'undici';
+import { restartPyPipe } from './pythonProcControl';
+import { SOCK_PATH, PIPE_MAX_TRIES, TRY_INTERVAL } from './config';
+// import { ipcMain } from 'electron';
+
+let failures = 0;
+let getting_data: boolean = false;
+
+// Set up a global agent that uses the Unix Domain Socket
+setGlobalDispatcher(new Agent({
+    socketPath: SOCK_PATH
+}));
+
+export async function initPacWavePipe(){
+    restartPyPipe();
+}
+
+// Runs for lifetime of application
+export async function CheckPacWavePipe () {
+    if (!getting_data) setInterval(tryStatus, TRY_INTERVAL);
+}
+
+async function tryStatus () {
+    try  {
+        // Try to access pipeline
+        const { statusCode, body } = await request('http://localhost/status');
+        if (statusCode != 200){
+            throw new Error(`Bad status: ${statusCode}`);
+        }
+        // Success, fulfill promise
+        await body.json();
+        failures = 0;
+    } 
+    catch (error) {
+        // Catch the bad status and increment failures. Restart pipe if exceed tries
+        failures++;
+        console.warn(`PyPipe start failures: (${failures}/${PIPE_MAX_TRIES})`);
+
+        if (failures >= PIPE_MAX_TRIES) {
+            console.error('Python appears hung — restarting');
+            failures = 0;
+            restartPyPipe();
+        }
+    }
+}
+
+// async function getCdipData() {
+//     try {
+//         getting_data = true;
+//         // Try to access pipeline
+//         const { statusCode, body } = await request('http://localhost/data/cdip', {
+//             headersTimeout: 10000,
+//             bodyTimeout: 10000
+//         });
+//         if (statusCode != 200){
+//             throw new Error(`Bad status: ${statusCode}`);
+//         }
+//         // Success, fulfill promise
+//         const json = await body.json();
+//         console.log(json);
+//         // type BuoyData = z.infer<typeof buoyDataZ>;
+//         // const data: BuoyData = buoyDataZ.parse(json);
+//         getting_data = false;
+//         // return data
+//     } 
+//     catch (err) {
+//         console.error('CDIP fetch failed:', err);
+//         throw err; // propagate to renderer
+//     }
+// }
+
+// // HANDLERS
+// export function registerPyPipeHandlers(){
+//     ipcMain.handle('get-wave-data', getCdipData)
+// }

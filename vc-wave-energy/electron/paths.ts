@@ -1,0 +1,17 @@
+import { fileURLToPath } from 'node:url';
+import path from 'node:path';
+import { app } from 'electron';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+export const ELECTRON_DIST = __dirname;
+export const APP_ROOT = path.join(__dirname, '..');
+export const CONFIG_PATH = path.join(APP_ROOT, 'config');
+export const PACWAVE_CONFIG = path.join(CONFIG_PATH, 'pacwave.config.json');
+export const ARDUINO_CONFIG = path.join (CONFIG_PATH, 'arduino.config.json');
+export const CUSTOM_WAVE_CONFIG = path.join (CONFIG_PATH, 'customwave.config.json');
+
+export const WAVERIDER_JSON = path.join(APP_ROOT, 'Shared/data/waverider.json');
+export const USER_DATA_DIR = app.getPath("userData");
+export const USER_DATA_FILE = path.join(app.getPath("userData"), "waverider.json");

@@ -1,0 +1,29 @@
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App.tsx";
+import "./index.css";
+import { HashRouter, Route, Routes } from "react-router-dom";
+import WaveSelectorPage from "./pages/WaveSelectorPage.tsx";
+import WaveReadPage from "./pages/WaveReadPage.tsx";
+import ContextProvider from "./AppContext.tsx";
+import LearnPage from "./pages/LearnPage.tsx";
+
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <React.StrictMode>
+    <ContextProvider>
+      <HashRouter>
+        <Routes>
+          <Route path="/" element={<App />} />
+          <Route path="/wave-selector-page" element={<WaveSelectorPage />} />
+          <Route path="/wave-read-page" element={<WaveReadPage />} />
+          <Route path="/learn-page" element={<LearnPage />} />
+        </Routes>
+      </HashRouter>
+    </ContextProvider>
+  </React.StrictMode>,
+);
+
+// Use contextBridge
+window.ipcRenderer.on("main-process-message", (_event, message) => {
+  console.log(message);
+});

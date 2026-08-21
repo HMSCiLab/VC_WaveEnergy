@@ -1,0 +1,47 @@
+import { ipcRenderer, contextBridge } from 'electron'
+
+// --------- Expose some API to the Renderer process ---------
+contextBridge.exposeInMainWorld('ipcRenderer', {
+  on(...args: Parameters<typeof ipcRenderer.on>) {
+    const [channel, listener] = args
+    return ipcRenderer.on(channel, (event, ...args) => listener(event, ...args))
+  },
+  off(...args: Parameters<typeof ipcRenderer.off>) {
+    const [channel, ...omit] = args
+    return ipcRenderer.off(channel, ...omit)
+  },
+  send(...args: Parameters<typeof ipcRenderer.send>) {
+    const [channel, ...omit] = args
+    return ipcRenderer.send(channel, ...omit)
+  },
+  invoke(...args: Parameters<typeof ipcRenderer.invoke>) {
+    const [channel, ...omit] = args
+    return ipcRenderer.invoke(channel, ...omit)
+  },
+})
+
+const PACWAVE_API = {
+  requestWaveData: () => {ipcRenderer.invoke("get-wave-data")},
+  requestSharedWaveData: () => {ipcRenderer.invoke("get-drive-data")}
+}
+
+const ARDUINO_API = {
+  sendWave: (selected: {size: number, period: number}) => {
+    if (selected.size !== undefined || selected.period !== undefined ){
+      ipcRenderer.invoke('send-wave', event, selected);
+    } 
+    else {
+      ipcRenderer.invoke('send-wave', event, {
+        size: 3,
+        period: 7
+      })
+    }
+  },
+  selectionOptions: () => {
+    ipcRenderer.invoke('get-height-options',  event);
+    ipcRenderer.invoke('get-period-options', event);
+  }
+}
+
+contextBridge.exposeInMainWorld('arduinoAPI', ARDUINO_API);
+contextBridge.exposeInMainWorld('pacwaveAPI', PACWAVE_API);
