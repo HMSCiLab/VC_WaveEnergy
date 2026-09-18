@@ -13,13 +13,15 @@ import LoadingSpinner from "../components/LoadingSpinner";
 function StartPage() {
   const navigate = useNavigate();
   const { setSelectedHeight, setSelectedPeriod } = useAppContext();
-  const [arduinoConnected, setArduinoConnected] = useState<boolean>(false);
+  const [arduinoConnected, setArduinoConnected] = useState<boolean>(true);
+  // const [arduinoConnected, setArduinoConnected] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     async function getInitStatus() {
       const status = await window.ipcRenderer.invoke("arduino-status");
-      setArduinoConnected(status.connected);
+      // setArduinoConnected(status.connected);
+      setArduinoConnected(true);
     }
     getInitStatus();
 
@@ -30,7 +32,8 @@ function StartPage() {
 
     window.ipcRenderer.on("arduino-disconnected", () => {
       console.log("Arduino disconnected!");
-      setArduinoConnected(false);
+      // setArduinoConnected(false);
+      setArduinoConnected(true);
     });
   }, []);
 
