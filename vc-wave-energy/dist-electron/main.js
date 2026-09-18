@@ -6246,7 +6246,7 @@ process.env.VITE_PUBLIC = gr ? te.join(qe, "public") : Bc;
 let ue;
 function mu() {
   ue = new bn({
-    kiosk: !0,
+    // kiosk: true,
     webPreferences: {
       preload: te.join(Ou, "preload.mjs")
     },

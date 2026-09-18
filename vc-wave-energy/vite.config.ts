@@ -8,6 +8,11 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
   base: './',
   assetsInclude: ['**/*.riv'],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
   plugins: [
     react(),
     tailwindcss(),
