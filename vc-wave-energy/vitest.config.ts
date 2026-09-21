@@ -3,7 +3,7 @@ import react from "@vitejs/plugin-react";
 
 export default defineConfig({
   plugins: [react()],
-  assetsInclude: ["**/*.riv"],
+  assetsInclude: ["**/*.riv", "**/*.mp4"],
   test: {
     environment: "jsdom",
     setupFiles: ["./tests/setup.ts"],

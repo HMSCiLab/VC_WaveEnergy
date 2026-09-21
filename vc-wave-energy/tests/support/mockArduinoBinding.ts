@@ -1,8 +1,9 @@
 import { MockBinding } from "@serialport/binding-mock";
+import arduinoConfig from "../../config/arduino.config.json";
 
 const MOCK_PATH = "/dev/mock-arduino";
-const MOCK_VENDOR_ID = "2341";
-const MOCK_PRODUCT_ID = "0069";
+const MOCK_VENDOR_ID = arduinoConfig.ports.r4minima_vendor_id;
+const MOCK_PRODUCT_ID = arduinoConfig.ports.r4minima_product_id;
 const RESPONSE =
   '{"channel":"SOT","mssg":"","data":0}{"channel":"WAVEDATA","mssg":"","data":1}{"channel":"WAVEDATA","mssg":"","data":2}{"channel":"WAVEDATA","mssg":"","data":3}{"channel":"EOT","mssg":"","data":0}';
 
