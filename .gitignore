@@ -212,3 +212,6 @@ coverage.xml
 .hypothesis/
 .pytest_cache/
 cover/
+
+
+dist-electron/
