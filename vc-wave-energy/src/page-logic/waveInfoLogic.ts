@@ -14,11 +14,11 @@ export const computeEnergy = (h: number, t: number) => {
     const instantaneousKW = (0.49 * (h ** 2) * t) * .15;
     // 1 meter width & operating for one hour
     const kilowattHours = Math.min(Math.max(instantaneousKW * 1 / 1, 2), 150);
-    const animationNums = new Array();
+    const animationNums = new Array<number>();
     
     // Get ten random number +/- 40 of the instantaneous KW
     while (animationNums.length <= 10) {
-      let num = ((Math.random() * 40) - 20) + instantaneousKW;
+      const num = ((Math.random() * 40) - 20) + instantaneousKW;
 
       if ((num > 2) && (num < 150)) animationNums.push(num)
     }

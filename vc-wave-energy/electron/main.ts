@@ -83,7 +83,7 @@ app.whenReady().then(() => {
 
 
 // Custom send handler
-export function safeSend(channel: string, ...args: any[]) {
+export function safeSend(channel: string, ...args: unknown[]) {
   if (win && !win.isDestroyed()) {
     win.webContents.send(channel, ...args);
   }

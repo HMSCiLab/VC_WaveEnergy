@@ -1,6 +1,7 @@
 import { ipcMain } from "electron";
 import { IpcSender } from "./types/ipc";
-import { createRequire } from 'node:module'
+import { SerialPort } from "serialport";
+import { ReadlineParser } from "@serialport/parser-readline";
 import { 
   FEATHER_PRODUCT_ID, 
   FEATHER_VENDOR_ID,
@@ -11,15 +12,10 @@ import {
 } from "./config";
 import JSON5 from 'json5'
 
-const require = createRequire(import.meta.url);
-const { SerialPort } = require('serialport');
-const { ReadlineParser } = require('@serialport/parser-readline');
-
-
 // PORT CREATION
-let port: any = null;
+let port: InstanceType<typeof SerialPort> | null = null;
 let waveData: number[] = [];
-let parser: any = null;
+let parser: ReadlineParser | null = null;
 let send: IpcSender;
 let pollTimer: NodeJS.Timeout | null = null;
 let serialBinding: typeof SerialPort.binding = SerialPort.binding;
@@ -29,6 +25,8 @@ interface response {
     mssg: string;
     data: number;
 }
+
+type SerialPortInfo = Awaited<ReturnType<typeof SerialPort.list>>[number];
 
 export function initArduino(
     sender: IpcSender,
@@ -47,7 +45,7 @@ function decomposeLine(line: string): response {
 
 async function tryArduinoConnection(){
   const ports = await serialBinding.list();
-  const arduinoPort = ports.find((p: any) => 
+  const arduinoPort = ports.find((p: SerialPortInfo) =>
     p.vendorId && (
       p.vendorId === FEATHER_VENDOR_ID ||
       p.productId === FEATHER_PRODUCT_ID ||
@@ -155,6 +153,9 @@ export function registerArduinoHandlers() {
 
     ipcMain.handle('send-wave', async(_event, selected) => {
         // selected -> {height: number, period: number}
+        if (!port || !port.isOpen) {
+            throw new Error("Arduino is not connected");
+        }
         const cmmd: string = JSON.stringify(selected);
         port.write(cmmd + '\n', (err: Error | null | undefined) => {
             err 

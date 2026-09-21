@@ -38,7 +38,7 @@ export const usePowerMeter = () => {
       }),
   });
 
-  let meterEnergy: StateMachineInput | null = useStateMachineInput(
+  const meterEnergy: StateMachineInput | null = useStateMachineInput(
       riveMeter,
       "State Machine 1",
       "energy",
