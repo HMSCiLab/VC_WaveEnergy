@@ -6,11 +6,13 @@ import WaveSelectorPage from "../src/pages/WaveSelectorPage";
 import waveConfig from "../config/customwave.config.json";
 
 vi.mock("../src/components/RiveSlider", async () => {
-  const { MockRiveSlider } = await import("./support/mockRiveSlider");
-  return { default: MockRiveSlider };
+  const { MockSlider } = await import("./support/mockSlider");
+  return { default: MockSlider };
 });
 
 const invoke = vi.mocked(window.ipcRenderer.invoke);
+const selectedHeight = waveConfig.height_selection_options[2].height;
+const selectedPeriod = waveConfig.period_selection_options[2].period;
 
 describe("wave selector", () => {
   beforeEach(() => {
@@ -37,14 +39,18 @@ describe("wave selector", () => {
     await waitFor(() =>
       expect(screen.getByTestId("height-slider")).toBeInTheDocument(),
     );
-    fireEvent.click(screen.getByRole("button", { name: "select-height-index-2" }));
-    fireEvent.click(screen.getByRole("button", { name: "select-period-index-2" }));
+    fireEvent.click(
+      screen.getByRole("radio", { name: `${selectedHeight} feet` }),
+    );
+    fireEvent.click(
+      screen.getByRole("radio", { name: `${selectedPeriod} seconds` }),
+    );
     fireEvent.click(screen.getByRole("button", { name: /Go/ }));
 
     await waitFor(() => {
       expect(invoke).toHaveBeenCalledWith("send-wave", {
-        height: 1220,
-        period: 6,
+        height: 1830,
+        period: selectedPeriod,
       });
     });
   });

@@ -9,6 +9,51 @@ type doodadInfo = {
   doodadNum: number,
 }
 
+export const chooseDoodad = (val: number): doodadInfo => {
+    const prefix = {
+      cellphones: "power to charge",
+      dishwasher: "to complete",
+      dryer: "to complete",
+      refrigerator: "to power a refrigerator for",
+      ac: "to power",
+      house: "to power the average house for"
+    }
+
+    const object = {
+      cellphones: "cellphones",
+      dishwasher: "loads in a dishwasher",
+      dryer: "cycles of a clothes dryer",
+      refrigerator: "days",
+      ac: "hours of air conditioning",
+      house: "days"
+    };
+
+    const numKW = {
+      cellphones: 40,
+      dishwasher: 9,
+      dryer: 45,
+      refrigerator: 8,
+      ac: 27,
+      house: 4
+    }
+
+    if (val <= 15) {
+      return { doodadPrefix: prefix.cellphones, doodadObject: object.cellphones, doodadNum: numKW.cellphones };
+    } else if (val <= 30) {
+      return { doodadPrefix: prefix.dishwasher, doodadObject: object.dishwasher, doodadNum: numKW.dishwasher };
+    } else if (val <= 60) {
+      return { doodadPrefix: prefix.dryer, doodadObject: object.dryer, doodadNum: numKW.dryer };
+    } else if (val <= 90) {
+      return { doodadPrefix: prefix.refrigerator, doodadObject: object.refrigerator, doodadNum: numKW.refrigerator };
+    } else if (val <= 120) {
+      return { doodadPrefix: prefix.ac, doodadObject: object.ac, doodadNum: numKW.ac };
+    } else if (val <= 150) {
+      return { doodadPrefix: prefix.house, doodadObject: object.house, doodadNum: numKW.house };
+    }
+
+    return { doodadPrefix: prefix.dishwasher, doodadObject: object.dishwasher, doodadNum: numKW.dishwasher };
+}
+
 export const computeEnergy = (h: number, t: number) => {
     // Reduce by 85% for loss
     const instantaneousKW = (0.49 * (h ** 2) * t) * .15;
@@ -41,71 +86,6 @@ export const useWaveInfo = (nav: NavigateFunction, showInfo: boolean) => {
     setDoodadName(doodadInfo.doodadObject);
     setDoodadPrefix(doodadInfo.doodadPrefix);
     setDoodadNumber(doodadInfo.doodadNum);
-  }
-
-  const chooseDoodad = (val: number): doodadInfo => {
-    let doodadPrefix = ""
-    let doodadObject = ""
-    let doodadNum = 0
-
-    const prefix = {
-      cellphones: "power to charge",
-      dishwasher: "to complete",
-      dryer: "to complete",
-      refrigerator: "to power a refrigerator for",
-      ac: "to power",
-      house: "to power the average house for"
-    }
-
-    const object = {
-      cellphones: "cellphones",
-      dishwasher: "loads in a dishwasher",
-      dryer: "cycles of a clothes dryer",
-      refrigerator: "days",
-      ac: "hours of air conditioning",
-      house: "days"
-    };
-
-    const numKW = {
-      cellphones: 40,
-      dishwasher: 9,
-      dryer: 45,
-      refrigerator: 8,
-      ac: 27,
-      house: 4
-    }
-
-    if (val <= 15) {
-      doodadPrefix = prefix.cellphones
-      doodadObject = object.cellphones
-      doodadNum = numKW.cellphones
-    } else if (val > 15 && val <= 30) {
-      doodadPrefix = prefix.dishwasher
-      doodadObject = object.dishwasher
-      doodadNum = numKW.dishwasher      
-    } else if (val > 30 && val <= 60) {
-      doodadPrefix = prefix.dryer
-      doodadObject = object.dryer
-      doodadNum = numKW.dryer
-    } else if (val > 60 && val <= 90) {
-      doodadPrefix = prefix.refrigerator
-      doodadObject = object.refrigerator
-      doodadNum = numKW.refrigerator
-    } else if (val > 90 && val <= 120) {
-      doodadPrefix = prefix.ac
-      doodadObject = object.ac
-      doodadNum = numKW.ac
-    } else if (val > 120 && val <= 150) {
-      doodadPrefix = prefix.house
-      doodadObject = object.house
-      doodadNum = numKW.house
-    } else {
-      doodadPrefix = prefix.dishwasher
-      doodadObject = object.dishwasher
-      doodadNum = numKW.dishwasher
-    }
-
-    return {doodadPrefix, doodadObject, doodadNum}
   }
 
   // Show info and manage the countdown

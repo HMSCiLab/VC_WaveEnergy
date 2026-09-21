@@ -12,6 +12,14 @@ import { createMockIpcBridge } from "./support/mockIpcBridge";
 const { ipcHandlers } = vi.hoisted(() => ({
   ipcHandlers: new Map<string, (...args: never[]) => unknown>(),
 }));
+const largestHeight =
+  waveConfig.height_selection_options[
+    waveConfig.height_selection_options.length - 1
+  ].height;
+const middlePeriod =
+  waveConfig.period_selection_options[
+    Math.floor(waveConfig.period_selection_options.length / 2)
+  ].period;
 
 vi.mock("electron", () => ({
   app: {
@@ -25,8 +33,8 @@ vi.mock("electron", () => ({
 }));
 
 vi.mock("../src/components/RiveSlider", async () => {
-  const { MockRiveSlider } = await import("./support/mockRiveSlider");
-  return { default: MockRiveSlider };
+  const { MockSlider } = await import("./support/mockSlider");
+  return { default: MockSlider };
 });
 
 vi.mock("@rive-app/react-canvas", () => ({
@@ -103,17 +111,17 @@ describe("custom wave happy path", () => {
       await screen.findByRole("button", { name: "Make your own wave" }),
     );
     fireEvent.click(
-      await screen.findByRole("button", { name: "select-height-index-6" }),
+      await screen.findByRole("radio", { name: `${largestHeight} feet` }),
     );
     fireEvent.click(
-      screen.getByRole("button", { name: "select-period-index-4" }),
+      screen.getByRole("radio", { name: `${middlePeriod} seconds` }),
     );
     fireEvent.click(screen.getByRole("button", { name: /Go/ }));
 
     await waitFor(() =>
       expect(bridge.ipcRenderer.invoke).toHaveBeenCalledWith("send-wave", {
         height: 3660,
-        period: 10,
+        period: middlePeriod,
       }),
     );
     await waitFor(() =>
@@ -132,12 +140,16 @@ describe("custom wave happy path", () => {
     );
     await waitFor(() =>
       expect(
-        screen.getByText(/If scaled to its true ocean size of 12 feet/),
-      ).toHaveTextContent("12 feet"),
+        screen.getByText(
+          new RegExp(
+            `If scaled to its true ocean size of ${largestHeight} feet`,
+          ),
+        ),
+      ).toHaveTextContent(`${largestHeight} feet`),
     );
     expect(
       screen.getByText(/If scaled to its true ocean size/),
-    ).toHaveTextContent("10 seconds");
+    ).toHaveTextContent(`${middlePeriod} seconds`);
     expect(
       screen.getByText(/If scaled to its true ocean size/),
     ).toHaveTextContent("27 hours of air conditioning");
