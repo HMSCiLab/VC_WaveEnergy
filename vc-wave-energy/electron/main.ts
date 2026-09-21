@@ -6,6 +6,7 @@ import { HEIGHT_SELECTION_OPTIONS, PERIOD_SELECTION_OPTIONS } from './config'
 
 import { cleanup, initArduino, registerArduinoHandlers } from './arduinoInterface'
 import { refreshData, registerPacWaveHandlers } from './pacwaveInterface'
+import { createMockArduinoBinding } from './mockArduinoBinding'
 
 
 export const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL']
@@ -19,7 +20,7 @@ let win: BrowserWindow | null
 
 function createWindow() {
   win = new BrowserWindow({
-    kiosk: true,
+    kiosk: process.env.WAVE_ENERGY_MOCK_ARDUINO !== "1",
     webPreferences: {
       preload: path.join(ELECTRON_DIST, 'preload.mjs'),
     },
@@ -64,7 +65,11 @@ app.whenReady().then(() => {
   createWindow();
   
   // ARUDINO
-  initArduino(safeSend);
+  const arduinoBinding =
+    process.env.WAVE_ENERGY_MOCK_ARDUINO === "1"
+      ? createMockArduinoBinding()
+      : undefined;
+  initArduino(safeSend, arduinoBinding);
   registerArduinoHandlers();
 
   // PACWAVE PIPE

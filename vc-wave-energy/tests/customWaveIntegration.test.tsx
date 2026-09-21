@@ -32,7 +32,7 @@ vi.mock("electron", () => ({
   },
 }));
 
-vi.mock("../src/components/RiveSlider", async () => {
+vi.mock("../src/components/RiveSliderInteraction", async () => {
   const { MockSlider } = await import("./support/mockSlider");
   return { default: MockSlider };
 });

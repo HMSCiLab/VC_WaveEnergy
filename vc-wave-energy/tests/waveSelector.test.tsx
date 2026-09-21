@@ -5,7 +5,7 @@ import ContextProvider from "../src/AppContext";
 import WaveSelectorPage from "../src/pages/WaveSelectorPage";
 import waveConfig from "../config/customwave.config.json";
 
-vi.mock("../src/components/RiveSlider", async () => {
+vi.mock("../src/components/RiveSliderInteraction", async () => {
   const { MockSlider } = await import("./support/mockSlider");
   return { default: MockSlider };
 });

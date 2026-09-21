@@ -27,8 +27,8 @@ export default function ContextProvider({
   const [waveData, setWaveData] = useState<number[]>([]);
   const [selectedHeight, setSelectedHeight] = useState<number>(0);
   const [selectedPeriod, setSelectedPeriod] = useState<number>(0);
-  const [activeHeightIndex, setActiveHeightIndex] = useState(0);
-  const [activePeriodIndex, setActivePeriodIndex] = useState(0);
+  const [activeHeightIndex, setActiveHeightIndex] = useState(1);
+  const [activePeriodIndex, setActivePeriodIndex] = useState(1);
   const [learnPageOne, setLearnPageOne] = useState<boolean>(true);
   return (
     <AppContext.Provider
