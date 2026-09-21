@@ -17,8 +17,11 @@ Use the commands from `vc-wave-energy/package.json`:
 - `cd vc-wave-energy && npm run build` — full production build. This currently passes in the repo.
 - `cd vc-wave-energy && npm run lint` — repository lint command. It currently fails on existing upstream issues in the codebase (notable `no-explicit-any`, `prefer-const`, and a few hook dependency warnings).
 - `cd vc-wave-energy && npm run dist` — package the Electron app.
+- `cd vc-wave-energy && npm test` — run the Vitest suite once.
+- `cd vc-wave-energy && npm run test:watch` — run Vitest in watch mode.
+- `cd vc-wave-energy && npx vitest run tests/waveSelector.test.tsx` — run one test file.
 
-There is no repo-standard automated test target configured in this repository right now: no `npm test` script was found, and no `pytest` configuration or test suite was discovered in the Python code.
+The renderer tests use Vitest with jsdom and Testing Library. Tests live under `vc-wave-energy/tests/`; the current suite covers slider selection/IPC conversion and the Electron Arduino interface with `@serialport/binding-mock`, so it does not require hardware. The test-only mock identifies itself as an R4 Minima (`2341`/`0069`) and emits `SOT`, `WAVEDATA`, and `EOT` asynchronously after a JSON wave command.
 
 ## High-level architecture
 

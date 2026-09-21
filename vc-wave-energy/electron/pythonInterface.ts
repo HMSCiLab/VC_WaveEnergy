@@ -4,7 +4,7 @@ import { SOCK_PATH, PIPE_MAX_TRIES, TRY_INTERVAL } from './config';
 // import { ipcMain } from 'electron';
 
 let failures = 0;
-let getting_data: boolean = false;
+const getting_data: boolean = false;
 
 // Set up a global agent that uses the Unix Domain Socket
 setGlobalDispatcher(new Agent({
