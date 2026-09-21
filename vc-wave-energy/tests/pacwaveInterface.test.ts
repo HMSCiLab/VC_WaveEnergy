@@ -42,11 +42,11 @@ const rawBuoyData = {
 describe("PacWave data refresh", () => {
   beforeEach(() => {
     mkdirSync(USER_DATA_DIR, { recursive: true });
-    writeFileSync(USER_DATA_FILE, JSON.stringify(rawBuoyData));
     spawn.mockReset();
   });
 
   it("copies the configured remote file and normalizes the resulting data", async () => {
+    writeFileSync(USER_DATA_FILE, JSON.stringify(rawBuoyData));
     const process = new EventEmitter() as EventEmitter & {
       stderr: EventEmitter;
     };
@@ -84,6 +84,42 @@ describe("PacWave data refresh", () => {
         period: 6,
         wavePower: 10,
       },
+    });
+  });
+
+  it("creates the cache and refreshes it on the first run", async () => {
+    rmSync(USER_DATA_DIR, { recursive: true, force: true });
+    const process = new EventEmitter() as EventEmitter & {
+      stderr: EventEmitter;
+    };
+    process.stderr = new EventEmitter();
+    spawn.mockReturnValue(process);
+
+    registerPacWaveHandlers();
+    const handler = vi
+      .mocked(ipcMain.handle)
+      .mock.calls.find(([channel]) => channel === "get-drive-data")?.[1];
+    const initialResult = handler?.({});
+
+    expect(readFileSync(USER_DATA_FILE, "utf-8")).toBe("{}");
+    expect(initialResult).toMatchObject({ success: false });
+    expect(spawn).toHaveBeenCalledWith(
+      "scp",
+      expect.arrayContaining([TEMP_FILE]),
+    );
+
+    writeFileSync(TEMP_FILE, JSON.stringify(rawBuoyData));
+    process.emit("close", 0);
+    await vi.waitFor(() =>
+      expect(JSON.parse(readFileSync(USER_DATA_FILE, "utf-8"))).toEqual(
+        rawBuoyData,
+      ),
+    );
+
+    const refreshedResult = handler?.({});
+    expect(refreshedResult).toMatchObject({
+      success: true,
+      data: { height: 1, period: 6 },
     });
   });
 

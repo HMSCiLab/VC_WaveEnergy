@@ -121,7 +121,7 @@ export const usePowerMeter = () => {
     return () => {
       clearInterval(meterIntervalId)
     }
-  }, [animationNums])
+  }, [animationNums, startWave])
 
   const moveGauge = () => {
       if (!meterEnergy) return;
