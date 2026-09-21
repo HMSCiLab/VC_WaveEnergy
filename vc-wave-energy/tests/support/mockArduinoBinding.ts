@@ -21,7 +21,11 @@ export function createMockArduinoBinding() {
       const write = port.write.bind(port);
       port.write = async (buffer) => {
         await write(buffer);
-        setTimeout(() => port.emitData(RESPONSE), 0);
+        setTimeout(() => {
+          if (port.isOpen) {
+            port.emitData(RESPONSE);
+          }
+        }, 0);
       };
       return port;
     },

@@ -2,6 +2,7 @@ import "@testing-library/jest-dom/vitest";
 import { vi } from "vitest";
 
 Object.defineProperty(window, "ipcRenderer", {
+  configurable: true,
   writable: true,
   value: {
     invoke: vi.fn(),

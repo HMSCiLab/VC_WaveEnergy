@@ -5,23 +5,10 @@ import ContextProvider from "../src/AppContext";
 import WaveSelectorPage from "../src/pages/WaveSelectorPage";
 import waveConfig from "../config/customwave.config.json";
 
-vi.mock("../src/components/RiveSlider", () => ({
-  default: ({
-    onSelectionChange,
-    rivFile,
-  }: {
-    onSelectionChange?: (index: number) => void;
-    rivFile: string;
-  }) => (
-    <div
-      data-testid={
-        rivFile.includes("height") ? "height-slider" : "period-slider"
-      }
-    >
-      <button onClick={() => onSelectionChange?.(2)}>select-index-2</button>
-    </div>
-  ),
-}));
+vi.mock("../src/components/RiveSlider", async () => {
+  const { MockRiveSlider } = await import("./support/mockRiveSlider");
+  return { default: MockRiveSlider };
+});
 
 const invoke = vi.mocked(window.ipcRenderer.invoke);
 
@@ -50,12 +37,8 @@ describe("wave selector", () => {
     await waitFor(() =>
       expect(screen.getByTestId("height-slider")).toBeInTheDocument(),
     );
-    fireEvent.click(
-      screen.getByTestId("height-slider").querySelector("button")!,
-    );
-    fireEvent.click(
-      screen.getByTestId("period-slider").querySelector("button")!,
-    );
+    fireEvent.click(screen.getByRole("button", { name: "select-height-index-2" }));
+    fireEvent.click(screen.getByRole("button", { name: "select-period-index-2" }));
     fireEvent.click(screen.getByRole("button", { name: /Go/ }));
 
     await waitFor(() => {
