@@ -21,6 +21,8 @@ let port: any = null;
 let waveData: number[] = [];
 let parser: any = null;
 let send: IpcSender;
+let pollTimer: NodeJS.Timeout | null = null;
+let serialBinding: typeof SerialPort.binding = SerialPort.binding;
 
 interface response {
     channel: string;
@@ -28,9 +30,14 @@ interface response {
     data: number;
 }
 
-export function initArduino(sender: IpcSender) {
+export function initArduino(
+    sender: IpcSender,
+    binding: typeof SerialPort.binding = SerialPort.binding,
+) {
     send = sender;
-    setInterval(tryArduinoConnection, 1000);
+    serialBinding = binding;
+    pollTimer = setInterval(tryArduinoConnection, 1000);
+    void tryArduinoConnection();
 }
 
 function decomposeLine(line: string): response {
@@ -39,7 +46,7 @@ function decomposeLine(line: string): response {
 }
 
 async function tryArduinoConnection(){
-  const ports = await SerialPort.list();
+  const ports = await serialBinding.list();
   const arduinoPort = ports.find((p: any) => 
     p.vendorId && (
       p.vendorId === FEATHER_VENDOR_ID ||
@@ -63,7 +70,8 @@ async function tryArduinoConnection(){
 
   port = new SerialPort({
     path: arduinoPort.path,
-    baudRate: BAUD_RATE
+    baudRate: BAUD_RATE,
+    binding: serialBinding,
   })
 
   port.on("open", () => {
@@ -113,6 +121,10 @@ async function tryArduinoConnection(){
 // CLEANUP
 export function cleanup(){
   console.log("main.ts >> Shutting down app");
+  if (pollTimer) {
+    clearInterval(pollTimer);
+    pollTimer = null;
+  }
   if (port && port.isOpen) {
     try {
       port.close();
@@ -122,6 +134,17 @@ export function cleanup(){
     }
   }
   process.exit(0)
+}
+
+export function stopArduino() {
+  if (pollTimer) {
+    clearInterval(pollTimer);
+    pollTimer = null;
+  }
+  if (port && port.isOpen) {
+    port.close();
+  }
+  port = null;
 }
 
 // HANDLERS
