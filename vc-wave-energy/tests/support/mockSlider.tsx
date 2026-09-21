@@ -3,6 +3,7 @@ import waveConfig from "../../config/customwave.config.json";
 type MockSliderProps = {
   onSelectionChange?: (index: number) => void;
   rivFile: string;
+  label?: string;
 };
 
 export function MockSlider({ onSelectionChange, rivFile }: MockSliderProps) {

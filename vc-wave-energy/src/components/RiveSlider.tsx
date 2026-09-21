@@ -13,9 +13,10 @@ import useWaveSelector from "../page-logic/waveSelectorLogic";
 interface Props {
   rivFile: string;
   onSelectionChange?: (index: number) => void;
+  selectedIndex?: number;
 }
 
-function RiveSlider({ rivFile, onSelectionChange }: Props) {
+function RiveSlider({ rivFile, onSelectionChange, selectedIndex }: Props) {
   const { heightOptions, periodOptions } = useWaveSelector();
 
   const { rive, RiveComponent } = useRive({
@@ -32,26 +33,48 @@ function RiveSlider({ rivFile, onSelectionChange }: Props) {
   const viewModel = useViewModel(rive, { name: "ViewModel1" });
   const vmi = useViewModelInstance(viewModel, { rive });
 
-  const { value: selection1 } = useViewModelInstanceBoolean("selection1", vmi);
-  const { value: selection2 } = useViewModelInstanceBoolean("selection2", vmi);
-  const { value: selection3 } = useViewModelInstanceBoolean("selection3", vmi);
-  const { value: selection4 } = useViewModelInstanceBoolean("selection4", vmi);
-  const { value: selection5 } = useViewModelInstanceBoolean("selection5", vmi);
-  const { value: selection6 } = useViewModelInstanceBoolean("selection6", vmi);
+  const selection1 = useViewModelInstanceBoolean("selection1", vmi);
+  const selection2 = useViewModelInstanceBoolean("selection2", vmi);
+  const selection3 = useViewModelInstanceBoolean("selection3", vmi);
+  const selection4 = useViewModelInstanceBoolean("selection4", vmi);
+  const selection5 = useViewModelInstanceBoolean("selection5", vmi);
+  const selection6 = useViewModelInstanceBoolean("selection6", vmi);
 
-  const activeIndex = selection1
+  const activeIndex = selection1.value
     ? 1
-    : selection2
+    : selection2.value
       ? 2
-      : selection3
+      : selection3.value
         ? 3
-        : selection4
+        : selection4.value
           ? 4
-          : selection5
+          : selection5.value
             ? 5
-            : selection6
+            : selection6.value
               ? 6
               : 0;
+
+  useEffect(() => {
+    if (!selectedIndex) return;
+    [
+      selection1,
+      selection2,
+      selection3,
+      selection4,
+      selection5,
+      selection6,
+    ].forEach((selection, index) =>
+      selection.setValue(index + 1 === selectedIndex),
+    );
+  }, [
+    selectedIndex,
+    selection1,
+    selection2,
+    selection3,
+    selection4,
+    selection5,
+    selection6,
+  ]);
 
   useEffect(() => {
     onSelectionChange?.(activeIndex);
@@ -79,7 +102,7 @@ function RiveSlider({ rivFile, onSelectionChange }: Props) {
         `${periodOptions[4].period} seconds`,
       );
     }
-  }, [rive]);
+  }, [heightOptions, periodOptions, rive, rivFile]);
 
   return <RiveComponent />;
 }

@@ -1,14 +1,20 @@
 import bgImage from "../assets/background-ocean.jpg";
-import RiveSlider from "../components/RiveSlider";
+import RiveSliderInteraction from "../components/RiveSliderInteraction";
 import heightSlider from "../assets/heightslider.riv"
 import periodSlider from "../assets/periodslider.riv"
 import { useAppContext } from "../AppContext";
 import useWaveSelector from "../page-logic/waveSelectorLogic";
 import { Link } from "react-router-dom";
+import waveConfig from "../../config/customwave.config.json";
 
 function WaveSelectorPage() {
-  const { setActiveHeightIndex, setActivePeriodIndex } = useAppContext();
-  const { onClickSendWave, onGoNotReady, readyToFire } = useWaveSelector();
+  const {
+    activeHeightIndex,
+    activePeriodIndex,
+    setActiveHeightIndex,
+    setActivePeriodIndex,
+  } = useAppContext();
+  const { onClickSendWave } = useWaveSelector();
 
   return (
     // Top container
@@ -33,15 +39,21 @@ function WaveSelectorPage() {
         {/* Slider */}
         <div className="flex flex-1 gap-8 items-center justify-center">
           <div className="flex flex-1 h-full pb-1">
-            <RiveSlider
+            <RiveSliderInteraction
               rivFile={heightSlider}
+              optionCount={waveConfig.height_selection_options.length}
+              value={activeHeightIndex}
+              label="height slider"
               onSelectionChange={setActiveHeightIndex}
             />
           </div>
 
           <div className="flex flex-1 h-full pe-6">
-            <RiveSlider
+            <RiveSliderInteraction
               rivFile={periodSlider}
+              optionCount={waveConfig.period_selection_options.length}
+              value={activePeriodIndex}
+              label="period slider"
               onSelectionChange={setActivePeriodIndex}
             />
           </div>
@@ -50,17 +62,16 @@ function WaveSelectorPage() {
         {/* Go Button */}
         <div className="flex flex-row justify-center items-center gap-10">
           <button
-            onClick={readyToFire ? onClickSendWave : onGoNotReady}
+            onClick={onClickSendWave}
             className="bg-[#95d5b2]/90 border-4 border-[#52b788]
             flex items-center justify-center
             px-16 py-8 text-4xl rounded-full font-bold tracking-widest 
             active:bg-[#52b788]/70 active:scale-95 active:border-4 active:border-[#52b788]"
-            disabled={!readyToFire}
           >
             {/* First span sets width */}
             <span className="invisible">Select a wave</span>
             <span className="absolute">
-              {readyToFire ? "Go" : "Select a wave"}
+               Go
             </span>
           </button>
 
