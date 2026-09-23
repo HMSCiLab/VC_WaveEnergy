@@ -1,4 +1,10 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import ContextProvider from "../src/AppContext";
@@ -27,7 +33,7 @@ const buoyData = {
   success: true,
   data: {
     stationID: 277,
-    ts: new Date("2026-09-21T17:00:00.000Z"),
+    ts: new Date(Date.now() - 60 * 60 * 1000),
     lat: 44.6,
     long: -124.1,
     height: 1,
@@ -56,6 +62,7 @@ describe("StartPage real-time waves", () => {
   });
 
   afterEach(() => {
+    cleanup();
     stopArduino();
   });
 
@@ -129,5 +136,98 @@ describe("StartPage real-time waves", () => {
       expect(serialEvents).toHaveBeenCalledWith("wave-val", 3);
       expect(serialEvents).toHaveBeenCalledWith("complete-wave", [1, 2, 3]);
     });
+  });
+
+  it("sends a 10ft, 6s fallback when buoy data is stale", async () => {
+    const staleBuoyData = {
+      ...buoyData,
+      data: {
+        ...buoyData.data,
+        ts: new Date(Date.now() - 7 * 60 * 60 * 1000),
+      },
+    };
+    invoke.mockImplementation(async (channel) => {
+      if (channel === "arduino-status") {
+        return { connected: true };
+      }
+      if (channel === "get-drive-data") {
+        return staleBuoyData;
+      }
+      if (channel === "send-wave") {
+        return "OK";
+      }
+      return undefined;
+    });
+
+    render(
+      <ContextProvider>
+        <MemoryRouter initialEntries={["/"]}>
+          <Routes>
+            <Route path="/" element={<StartPage />} />
+            <Route
+              path="/wave-read-page"
+              element={<div data-testid="wave-read-page" />}
+            />
+          </Routes>
+        </MemoryRouter>
+      </ContextProvider>,
+    );
+
+    fireEvent.click(
+      await screen.findByRole("button", { name: "See real-time waves" }),
+    );
+
+    await waitFor(() =>
+      expect(invoke).toHaveBeenCalledWith("send-wave", {
+        height: 10,
+        period: 6,
+      }),
+    );
+    await waitFor(() =>
+      expect(screen.getByTestId("wave-read-page")).toBeInTheDocument(),
+    );
+  });
+
+  it("sends a 10ft, 6s fallback when buoy data cannot be parsed", async () => {
+    invoke.mockImplementation(async (channel) => {
+      if (channel === "arduino-status") {
+        return { connected: true };
+      }
+      if (channel === "get-drive-data") {
+        return { success: false, data: null, err: {} };
+      }
+      if (channel === "send-wave") {
+        return "OK";
+      }
+      return undefined;
+    });
+
+    render(
+      <ContextProvider>
+        <MemoryRouter initialEntries={["/"]}>
+          <Routes>
+            <Route path="/" element={<StartPage />} />
+            <Route
+              path="/wave-read-page"
+              element={<div data-testid="wave-read-page" />}
+            />
+          </Routes>
+        </MemoryRouter>
+      </ContextProvider>,
+    );
+
+    fireEvent.click(
+      await screen.findByRole("button", { name: "See real-time waves" }),
+    );
+
+    await waitFor(() =>
+      expect(invoke).toHaveBeenCalledWith("send-wave", {
+        height: 10,
+        period: 6,
+      }),
+    );
+    await waitFor(() =>
+      expect(screen.getByTestId("wave-read-page")).toBeInTheDocument(),
+    );
   });
 });

@@ -6,9 +6,21 @@ import { useAppContext } from "../AppContext";
 import {
   BuoyData,
   BuoyDataParseResult,
+  isBuoyDataStale,
 } from "../../electron/types/buoyDataType";
 import { clampInput } from "../page-logic/utils";
 import LoadingSpinner from "../components/LoadingSpinner";
+import pacwaveConfig from "../../config/pacwave.config.json";
+
+const FALLBACK_BUOY_DATA: BuoyData = {
+  stationID: pacwaveConfig.fallback_buoy_data.station_id,
+  ts: new Date(pacwaveConfig.fallback_buoy_data.timestamp),
+  lat: pacwaveConfig.fallback_buoy_data.latitude,
+  long: pacwaveConfig.fallback_buoy_data.longitude,
+  height: pacwaveConfig.fallback_buoy_data.height_m,
+  period: pacwaveConfig.fallback_buoy_data.period_s,
+  wavePower: pacwaveConfig.fallback_buoy_data.wave_power_kw_per_m,
+};
 
 function StartPage() {
   const navigate = useNavigate();
@@ -60,12 +72,21 @@ function StartPage() {
       const pacwaveData: BuoyDataParseResult =
         await window.ipcRenderer.invoke("get-drive-data");
 
+      let waveData: BuoyData;
       if (!pacwaveData.success) {
-        setLoading(false);
-        console.log(pacwaveData.data);
+        console.log(pacwaveData.err);
+        waveData = FALLBACK_BUOY_DATA;
+      } else if (isBuoyDataStale(pacwaveData.data)) {
+        waveData = FALLBACK_BUOY_DATA;
+      } else {
+        waveData = pacwaveData.data;
+      }
+      sendWaveOverIPC(waveData);
+
+      if (!pacwaveData.success) {
         return;
       }
-      sendWaveOverIPC(pacwaveData.data);
+
       console.log(
         `Drive height/period ${pacwaveData.data.height}/${pacwaveData.data.period}`,
       );

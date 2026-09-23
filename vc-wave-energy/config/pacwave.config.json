@@ -7,6 +7,15 @@
     "max_failures": 3
   },
   "remote_host": "hmsc-visitor@pacwave-data.ceoas.oregonstate.edu",
-  "remote_file": "/data/hatfield/waverider/waverider.json"
+  "remote_file": "/data/hatfield/waverider/waverider.json",
+  "fallback_buoy_data": {
+    "station_id": 0,
+    "timestamp": "1970-01-01T00:00:00.000Z",
+    "latitude": 0,
+    "longitude": 0,
+    "height_m": 3.048780487804878,
+    "period_s": 6,
+    "wave_power_kw_per_m": 0
+  }
 
 }

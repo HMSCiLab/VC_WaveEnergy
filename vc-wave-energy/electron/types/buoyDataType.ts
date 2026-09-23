@@ -14,6 +14,13 @@ export type BuoyDataParseResult =
     | {success: true, data: BuoyData, err: null}
     | {success: false, data: null, err: z.ZodError}
 
+export const PACWAVE_STALE_AFTER_MS = 6 * 60 * 60 * 1000;
+
+export const isBuoyDataStale = (
+    data: BuoyData,
+    now = Date.now(),
+): boolean => now - data.ts.getTime() > PACWAVE_STALE_AFTER_MS;
+
 
 const BuoyDataSchema = z
     .object({
