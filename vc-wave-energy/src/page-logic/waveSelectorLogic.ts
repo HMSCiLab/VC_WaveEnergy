@@ -11,6 +11,8 @@ const useWaveSelector = () => {
     const {
         setSelectedHeight,
         setSelectedPeriod,
+        setActiveHeightIndex,
+        setActivePeriodIndex,
         activeHeightIndex,
         activePeriodIndex,
     } = useAppContext();
@@ -18,6 +20,12 @@ const useWaveSelector = () => {
     // Hook specific context
     const [heightOptions, setHeightOptions] = useState<heightSelection[]>([]);
     const [periodOptions, setPeriodOptions] = useState<periodSelection[]>([]);
+
+    // Reset custom-wave selections whenever the selector is entered.
+    useEffect(() => {
+        setActiveHeightIndex(1);
+        setActivePeriodIndex(1);
+    }, [setActiveHeightIndex, setActivePeriodIndex]);
 
     // On mount, get the configured options for the sliders.
     useEffect(() => {
