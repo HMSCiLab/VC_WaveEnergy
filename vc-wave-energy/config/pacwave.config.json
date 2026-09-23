@@ -13,8 +13,8 @@
     "timestamp": "1970-01-01T00:00:00.000Z",
     "latitude": 0,
     "longitude": 0,
-    "height_m": 3.048780487804878,
-    "period_s": 6,
+    "height_m": 2.384,
+    "period_s": 9,
     "wave_power_kw_per_m": 0
   }
 
